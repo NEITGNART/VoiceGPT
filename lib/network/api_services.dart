@@ -11,6 +11,7 @@ import '../models/custom_chat_response.dart';
 import '../models/images.dart';
 import '../models/model.dart';
 import '../utils/constants.dart';
+import '../utils/logger.dart';
 import 'error_message.dart';
 import 'network_client.dart';
 
@@ -66,15 +67,14 @@ Future<List<Chat>> submitGetChatsForm({
       token: OPEN_API_KEY,
     );
     Map<String, dynamic> mp = jsonDecode(res.toString());
-    debugPrint(mp.toString());
     if (mp['choices'].length > 0) {
       chatList = List.generate(mp['choices'].length, (i) {
+        logger.e(mp['choices'][i]['text']);
         return Chat.fromJson(<String, dynamic>{
           'msg': mp['choices'][i]['text'],
           'chat': 1,
         });
       });
-      debugPrint(chatList.toString());
     }
   } on RemoteException catch (e) {
     Logger().e(e.dioError);
@@ -114,17 +114,15 @@ Future<List<Model>> submitGetModelsForm({
 }
 
 abstract class ChatRepository {
-  Future<List<CustomChatReponse>> send({
+  Future<List<CustomChatResponse>> send({
     required BuildContext context,
     required CustomChatRequest chat,
   });
 }
 
-class CustomChatReponse {}
-
 class ChatRepositoryImpl implements ChatRepository {
   @override
-  Future<List<CustomChatReponse>> send(
+  Future<List<CustomChatResponse>> send(
       {required BuildContext context, required CustomChatRequest chat}) async {
     NetworkClient networkClient = NetworkClient();
     List<CustomChatResponse> chatList = [];
@@ -132,13 +130,12 @@ class ChatRepositoryImpl implements ChatRepository {
       final res = await networkClient.post(
         "localhost:3000/continue-chat",
         {"message": chat.message, "temperature": 0},
-        token: OPEN_API_KEY,
       );
       Map<String, dynamic> mp = jsonDecode(res.toString());
       debugPrint(mp.toString());
     } on RemoteException catch (e) {
       Logger().e(e.dioError);
     }
-    return Future.value(chatList as FutureOr<List<CustomChatReponse>>?);
+    return chatList;
   }
 }
