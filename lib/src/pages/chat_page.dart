@@ -1,8 +1,10 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:chatgpt/models/model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import '../../models/chat.dart';
 import '../../network/api_services.dart';
@@ -20,11 +22,18 @@ class _ChatPageState extends State<ChatPage> {
   List<Chat> chatList = [];
   List<Model> modelsList = [];
   late SharedPreferences prefs;
+
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _text = 'Press the button and start speaking';
+  double _confidence = 1.0;
+
   @override
   void initState() {
     super.initState();
     getModels();
     initPrefs();
+    _speech = stt.SpeechToText();
   }
 
   final PanelController _pc = PanelController();
@@ -163,6 +172,7 @@ class _ChatPageState extends State<ChatPage> {
                   ],
                 ),
                 _formChat(),
+                // voiceChat()
               ],
             ),
           ),
@@ -184,6 +194,7 @@ class _ChatPageState extends State<ChatPage> {
       //       ],
       //     ),
       //   ),
+      // create a speaker button
     );
   }
 
@@ -220,139 +231,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ],
           ),
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet<void>(
-                context: context,
-                backgroundColor: Colors.transparent,
-                builder: (BuildContext context) {
-                  return StatefulBuilder(
-                      builder: (BuildContext context, StateSetter state) {
-                    return Container(
-                      height: 400,
-                      decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                          )),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 15.0),
-                            child: Text(
-                              'Settings',
-                              style: TextStyle(
-                                color: Color(0xFFF75555),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Divider(
-                            color: Colors.grey.shade700,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(20, 2, 20, 2),
-                            child: DropdownButtonFormField(
-                              items: models,
-                              borderRadius: const BorderRadius.only(),
-                              focusColor: Colors.amber,
-                              onChanged: (String? s) {},
-                              decoration: const InputDecoration(
-                                  hintText: "Select Model"),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
-                            child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text("Token")),
-                          ),
-                          Slider(
-                            min: 0,
-                            max: 1000,
-                            activeColor: const Color(0xFFE58500),
-                            inactiveColor:
-                                const Color.fromARGB(255, 230, 173, 92),
-                            value: tokenValue.toDouble(),
-                            onChanged: (value) {
-                              state(() {
-                                tokenValue = value.round();
-                              });
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context).pop(false);
-                                  },
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2.2,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade200,
-                                      borderRadius: BorderRadius.circular(40),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 20),
-                                    child: const Center(
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    saveData(tokenValue);
-                                    Navigator.of(context).pop(false);
-                                  },
-                                  child: Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 2.2,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE58500),
-                                      borderRadius: BorderRadius.circular(40),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 20),
-                                    child: const Center(
-                                      child: Text(
-                                        'Save',
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  });
-                },
-              );
-            },
-            child: const Icon(
-              Icons.more_vert_rounded,
-              size: 25,
-              color: Colors.white,
-            ),
-          ),
+          MySetting(),
         ],
       ),
     );
@@ -495,83 +374,303 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  // Widget voiceChat() {
+  //   return Positioned(
+  //     bottom: MediaQuery.of(context).viewInsets.bottom,
+  //     child: Container(
+  //       width: MediaQuery.of(context).size.width,
+  //       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+  //       color: Colors.white,
+  //       child: Column(
+  //         children: [
+  //           TextField(
+  //             maxLines: null,
+  //             controller: mesageController,
+  //             decoration: InputDecoration(
+  //               hintText: 'Type your message...',
+  //               border: OutlineInputBorder(
+  //                 borderRadius: BorderRadius.circular(30),
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(height: 20),
+  //           InkWell(
+  //             onTap: () {
+  //               // convert voice to text
+  //             },
+  //             child: Container(
+  //               child: CircleAvatar(
+  //                 backgroundColor: Colors.white,
+  //                 radius: 30,
+  //                 child: AvatarGlow(
+  //                   animate: _isListening,
+  //                   glowColor: Theme.of(context).primaryColor,
+  //                   endRadius: 75.0,
+  //                   duration: const Duration(milliseconds: 2000),
+  //                   repeatPauseDuration: const Duration(milliseconds: 100),
+  //                   repeat: true,
+  //                   child: FloatingActionButton(
+  //                     onPressed: _listen,
+  //                     child: Icon(_isListening ? Icons.mic : Icons.mic_none),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   Widget _formChat() {
     return Positioned(
       bottom: MediaQuery.of(context).viewInsets.bottom,
       child: Container(
         width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         color: Colors.white,
-        child: TextField(
-          maxLines: null,
-          controller: mesageController,
-          decoration: InputDecoration(
-            hintText: 'Type your message...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
-                color: Colors.grey,
-                width: 2,
+        child: Column(
+          children: [
+            TextField(
+              maxLines: null,
+              controller: mesageController,
+              decoration: InputDecoration(
+                hintText: 'Type your message...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(
+                    color: Colors.grey,
+                    width: 2,
+                  ),
+                ),
+                suffixIcon: InkWell(
+                  onTap: (() async {
+                    messagePrompt = mesageController.text.toString();
+
+                    setState(() {
+                      chatList.add(Chat(msg: messagePrompt, chat: 0));
+                      mesageController.clear();
+                      _scrollController.animateTo(
+                        _scrollController.position.maxScrollExtent,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeOut,
+                      );
+                    });
+
+                    var submitGetChatsForm2 = await submitGetChatsForm(
+                      context: context,
+                      prompt: messagePrompt,
+                      tokenValue: tokenValue,
+                    );
+                    chatList.addAll(submitGetChatsForm2);
+
+                    setState(() {});
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeOut,
+                    );
+                  }),
+                  child: const Icon(
+                    Icons.send_rounded,
+                    color: Color.fromARGB(255, 243, 23, 202),
+                    size: 28,
+                  ),
+                ),
+                filled: true,
+                fillColor: Colors.blueGrey.shade50,
+                labelStyle: const TextStyle(fontSize: 12),
+                contentPadding: const EdgeInsets.all(20),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blueGrey.shade50),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blueGrey.shade50),
+                  borderRadius: BorderRadius.circular(25),
+                ),
               ),
             ),
-            prefixIcon: InkWell(
+            InkWell(
               onTap: () {
                 // convert voice to text
               },
-              child: const Icon(
-                Icons.voice_chat,
-                color: Color.fromARGB(255, 213, 45, 202),
+              child: AvatarGlow(
+                animate: _isListening,
+                glowColor: Theme.of(context).primaryColor,
+                endRadius: 75.0,
+                duration: const Duration(milliseconds: 2000),
+                repeatPauseDuration: const Duration(milliseconds: 100),
+                repeat: true,
+                child: FloatingActionButton(
+                  onPressed: _listen,
+                  child: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                ),
               ),
             ),
-            suffixIcon: InkWell(
-              onTap: (() async {
-                messagePrompt = mesageController.text.toString();
-
-                setState(() {
-                  chatList.add(Chat(msg: messagePrompt, chat: 0));
-                  mesageController.clear();
-                  _scrollController.animateTo(
-                    _scrollController.position.maxScrollExtent,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeOut,
-                  );
-                });
-
-                var submitGetChatsForm2 = await submitGetChatsForm(
-                  context: context,
-                  prompt: messagePrompt,
-                  tokenValue: tokenValue,
-                );
-                chatList.addAll(submitGetChatsForm2);
-
-                setState(() {});
-                _scrollController.animateTo(
-                  _scrollController.position.maxScrollExtent,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeOut,
-                );
-              }),
-              child: const Icon(
-                Icons.send_rounded,
-                color: Color.fromARGB(255, 243, 23, 202),
-                size: 28,
-              ),
-            ),
-            filled: true,
-            fillColor: Colors.blueGrey.shade50,
-            labelStyle: const TextStyle(fontSize: 12),
-            contentPadding: const EdgeInsets.all(20),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueGrey.shade50),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueGrey.shade50),
-              borderRadius: BorderRadius.circular(25),
-            ),
-          ),
+          ],
         ),
       ),
     );
+  }
+
+  GestureDetector MySetting() {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet<void>(
+          context: context,
+          backgroundColor: Colors.transparent,
+          builder: (BuildContext context) {
+            return StatefulBuilder(
+                builder: (BuildContext context, StateSetter state) {
+              return Container(
+                height: 400,
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    )),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 15.0),
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(
+                          color: Color(0xFFF75555),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.grey.shade700,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 2, 20, 2),
+                      child: DropdownButtonFormField(
+                        items: models,
+                        borderRadius: const BorderRadius.only(),
+                        focusColor: Colors.amber,
+                        onChanged: (String? s) {},
+                        decoration:
+                            const InputDecoration(hintText: "Select Model"),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
+                      child: Align(
+                          alignment: Alignment.topLeft, child: Text("Token")),
+                    ),
+                    Slider(
+                      min: 0,
+                      max: 1000,
+                      activeColor: const Color(0xFFE58500),
+                      inactiveColor: const Color.fromARGB(255, 230, 173, 92),
+                      value: tokenValue.toDouble(),
+                      onChanged: (value) {
+                        state(() {
+                          tokenValue = value.round();
+                        });
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 2.2,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 20),
+                              child: const Center(
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              saveData(tokenValue);
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width / 2.2,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE58500),
+                                borderRadius: BorderRadius.circular(40),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 15, horizontal: 20),
+                              child: const Center(
+                                child: Text(
+                                  'Save',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            });
+          },
+        );
+      },
+      child: const Icon(
+        Icons.more_vert_rounded,
+        size: 25,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('onStatus: $val'),
+        onError: (val) => print('onError: $val'),
+      );
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          onResult: (val) => setState(() {
+            _text = val.recognizedWords;
+            mesageController.text = _text;
+            if (val.hasConfidenceRating && val.confidence > 0) {
+              _confidence = val.confidence;
+            }
+          }),
+        );
+      }
+    } else {
+      _speech.stop();
+      setState(() {
+        _isListening = false;
+        mesageController.clear();
+      });
+    }
   }
 }
