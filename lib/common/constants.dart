@@ -9,6 +9,10 @@ const kSecondaryLabelColor = Color(0xFF797F8A);
 const kShadowColor = Color.fromRGBO(72, 76, 82, 0.16);
 const kCourseElementIconColor = Color(0xFF17294D);
 
+// Colors
+const kDarkModeBackgroundColor = Color(0xFF303338);
+const kLightModeBackgroundColor = Colors.white;
+
 // Text Styles
 var kLargeTitleStyle = const TextStyle(
   fontSize: 28.0,

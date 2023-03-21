@@ -1,11 +1,11 @@
 import 'dart:developer';
 
+import 'package:chatgpt/common/constants.dart';
 import 'package:chatgpt/network/admob_service_helper.dart';
 import 'package:chatgpt/src/pages/chat_page.dart';
 import 'package:chatgpt/src/pages/dalle_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -92,38 +92,47 @@ class _HomePageState extends State<HomePage> {
         elevation: 1,
         centerTitle: true,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buttonWidget('Generate image idea', () {
-            _showInterstitialAd();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const DallePage(),
-              ),
-            );
-          }),
-          buttonWidget(
-            'Chat GPT By OpenAi',
-            () {
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/chat-bot.png'),
+            opacity: 0.7,
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buttonWidget('Generate image idea', () {
               _showInterstitialAd();
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ChatPage(),
+                  builder: (context) => const DallePage(),
                 ),
               );
-            },
-          ),
-          buttonWidget("Hire me!", () {
-            _launchUrl(
-              Uri.parse(
-                'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
-              ),
-            );
-          }),
-        ],
+            }),
+            buttonWidget(
+              'Chat with GPT',
+              () {
+                _showInterstitialAd();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ChatPage(),
+                  ),
+                );
+              },
+            ),
+            buttonWidget("Hire me!", () {
+              // _launchUrl(
+              //   Uri.parse(
+              //     'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
+              //   ),
+              // );
+            }),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         alignment: Alignment.center,
@@ -152,18 +161,19 @@ class _HomePageState extends State<HomePage> {
           vertical: 5,
         ),
         child: Center(
-          child: Text(
-            text,
-          ),
+          child: Text(text,
+              style: kTitle1Style.copyWith(
+                color: Colors.black,
+              )),
         ),
       ),
     );
   }
 
-  Future<void> _launchUrl(Uri url) async {
-    if (!await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-    )) throw 'Could not launch $url';
-  }
+  // Future<void> _launchUrl(Uri url) async {
+  //   if (!await launchUrl(
+  //     url,
+  //     mode: LaunchMode.externalApplication,
+  //   )) throw 'Could not launch $url';
+  // }
 }

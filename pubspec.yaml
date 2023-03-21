@@ -44,12 +44,16 @@ dependencies:
   lottie: ^2.1.0
   shared_preferences: ^2.0.15
   shimmer: ^2.0.0
-  url_launcher: ^6.1.7
+  # url_launcher: ^6.1.7
   get: ^4.6.5
   flutter_riverpod: ^2.3.1
   riverpod_annotation: ^2.0.1
   speech_to_text: ^6.1.1
-  avatar_glow: ^2.0.2
+  # avatar_glow: ^2.0.2
+  audio_wave: ^0.1.5
+  flutter_tts: ^3.6.3
+  audioplayers: 1.0.1
+  # flutter_sound: ^9.2.13
 
 dev_dependencies:
   flutter_lints: ^2.0.0
@@ -72,8 +76,11 @@ flutter:
   assets:
     - assets/
     - assets/openai.svg
+    - assets/audio.mp3
+    - assets/splash.svg
     - assets/images/chat-background.jpg
     - assets/images/chat-bot.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

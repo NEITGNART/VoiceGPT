@@ -13,7 +13,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1600), () {
+    Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         // Here we are going to the City List Screen
         // we can make isProduction : true for showing active=true cities
@@ -31,10 +31,11 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: SvgPicture.asset(
-          'assets/openai.svg',
-          height: 130,
+          'assets/splash.svg',
+          fit: BoxFit.cover,
         ),
       ),
     );
