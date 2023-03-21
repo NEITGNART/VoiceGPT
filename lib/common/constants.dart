@@ -94,3 +94,5 @@ var kCaptionLabelStyle = const TextStyle(
   fontFamily: 'SF Pro Text',
   decoration: TextDecoration.none,
 );
+
+const int textLimit = 200;
