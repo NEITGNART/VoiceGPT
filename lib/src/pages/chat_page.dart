@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'dart:async';
 import 'dart:io';
 
-import 'package:audio_wave/audio_wave.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/models/model.dart';
 import 'package:chatgpt/src/pages/setting.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../common/constants.dart';
 import '../../models/chat.dart';
 import '../../network/api_services.dart';
+import '../chat/presentation/audio_waves.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -33,7 +36,8 @@ class _ChatPageState extends State<ChatPage> {
   List<Model> modelsList = [];
   late SharedPreferences prefs;
   // final FlutterSoundPlayer player = FlutterSoundPlayer();
-
+  ChatRepository chatRepository = ChatRepositoryImpl();
+  final assetsAudioPlayer = AssetsAudioPlayer();
   late stt.SpeechToText _speech;
   bool _isListening = false;
   final String _text = 'Press the button and start speaking';
@@ -43,6 +47,8 @@ class _ChatPageState extends State<ChatPage> {
   var _currentLocaleId;
 
   bool isDebounce = true;
+  String conversationId = '';
+  String parentMessageId = '';
 
   @override
   void initState() {
@@ -222,8 +228,12 @@ class _ChatPageState extends State<ChatPage> {
                         //     bottomRight: Radius.circular(20),
                         //   ),
                         ),
-                    child: ChatWidget(
-                        text: message, isMe: chat == 0 ? true : false),
+                    child: chat == 0
+                        ? ChatWidget(
+                            text: message, isMe: chat == 0 ? true : false)
+                        : SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            child: ChatWidget(isMe: false, text: message)),
                   ),
                 ),
               ],
@@ -233,32 +243,53 @@ class _ChatPageState extends State<ChatPage> {
               ? GestureDetector(
                   onTap: () async {
                     if (Platform.isIOS) {
+                      try {
+                        await assetsAudioPlayer.open(
+                          // Audio.network("http://www.mysite.com/myMp3file.mp3"),
+                          Audio("assets/audio.mp3"),
+                        );
+                      } catch (e) {
+                        print(e);
+                      }
                       // AudioCache audioPlayer = AudioCache();
                       // audioPlayer.play('audio.mp3');
-                      player.play(AssetSource('audio.mp3'));
+
+                      // final audio = AudioCache().load('audio.mp3');
+
+                      // await player.play(AssetSource('audio.mp3'));
+                      // await player.release();
                       // player.play()
                       // await player.setSourceUrl(
                       //     'https://file-examples.com/storage/fef1706276640fa2f99a5a4/2017/11/file_example_MP3_700KB.mp3');
-//                       final audioBytes =
-//                           await synthesizeSpeech('Hello, world!');
-//                       final directory = await getTemporaryDirectory();
-//                       final filePath =
-//                           '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp3';
-// // write the audio bytes to the file
-//                       final file = File(filePath);
-//                       await file.writeAsBytes(audioBytes);
-//                       // play the file
-//                       await player.play(DeviceFileSource(file.path));
+                      //                       final audioBytes =
+                      //                           await synthesizeSpeech('Hello, world!');
+                      //                       final directory = await getTemporaryDirectory();
+                      //                       final filePath =
+                      //                           '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp3';
+                      // // write the audio bytes to the file
+                      //                       final file = File(filePath);
+                      //                       await file.writeAsBytes(audioBytes);
+                      //                       // play the file
+                      //                       await player.play(DeviceFileSource(file.path));
                     } else {
-                      // final audioBytes =
-                      //     await synthesizeSpeech('Hello, world!');
-                      // //  BytesSource(audioBytes);
-                      // await player.play(BytesSource(audioBytes));
+                      
+                      if (isDebounce == true) {
+                        isDebounce = false;
+                        final audioBytes = await synthesizeSpeech(message);
+                        await player.play(BytesSource(audioBytes));
+
+                        Timer(
+                          const Duration(seconds: 3),
+                          () {
+                            isDebounce = true;
+                          },
+                        );
+                      }
                     }
-// player.play();
+                    // player.play();
                   },
                   child: const CircleAvatar(
-                    radius: 15,
+                    radius: 16,
                     child: Icon(
                       Icons.play_arrow,
                       color: Colors.white,
@@ -295,18 +326,18 @@ class _ChatPageState extends State<ChatPage> {
                     maxLength: textLimit,
                     onChanged: (value) {
                       setState(() {
-                        // if (value.length = textLimit) {
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     const SnackBar(
-                        //       duration: Duration(milliseconds: 500),
-                        //       content: Text(
-                        //         'Message is too long',
-                        //         style: TextStyle(color: Colors.white),
-                        //       ),
-                        //       backgroundColor: Colors.red,
-                        //     ),
-                        //   );
-                        // }
+                        if (value.length == textLimit) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              duration: Duration(milliseconds: 500),
+                              content: Text(
+                                'Message is too long',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
                         // if (value.length >= 5 && isDebounce == true) {
                         //   isDebounce = false;
 
@@ -325,7 +356,7 @@ class _ChatPageState extends State<ChatPage> {
                     minLines: 1,
                     controller: messageController,
                     decoration: InputDecoration(
-                      hintText: !_isListening ? 'Typing or Press the Mic' : '',
+                      hintText: !_isListening ? 'Type or Press the Mic' : '',
                       border: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.grey,
@@ -337,53 +368,7 @@ class _ChatPageState extends State<ChatPage> {
                               padding: EdgeInsets.only(
                                   left:
                                       MediaQuery.of(context).size.width * 0.1),
-                              child: AudioWave(
-                                height: 50,
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                spacing: 2,
-                                bars: [
-                                  AudioWaveBar(
-                                      heightFactor: 1,
-                                      color: Colors.lightBlueAccent),
-                                  AudioWaveBar(
-                                      heightFactor: 0.9, color: Colors.blue),
-                                  AudioWaveBar(
-                                      heightFactor: 0.8, color: Colors.black),
-                                  AudioWaveBar(heightFactor: 0.7),
-                                  AudioWaveBar(
-                                      heightFactor: 0.6, color: Colors.orange),
-                                  AudioWaveBar(
-                                      heightFactor: 0.5,
-                                      color: Colors.lightBlueAccent),
-                                  AudioWaveBar(
-                                      heightFactor: 0.4, color: Colors.blue),
-                                  AudioWaveBar(
-                                      heightFactor: 0.3, color: Colors.black),
-                                  AudioWaveBar(heightFactor: 0.2),
-                                  AudioWaveBar(
-                                      heightFactor: 0.1, color: Colors.orange),
-                                  AudioWaveBar(
-                                      heightFactor: 1,
-                                      color: Colors.lightBlueAccent),
-                                  AudioWaveBar(
-                                      heightFactor: 0.1, color: Colors.blue),
-                                  AudioWaveBar(
-                                      heightFactor: 0.2, color: Colors.black),
-                                  AudioWaveBar(heightFactor: 0.3),
-                                  AudioWaveBar(
-                                      heightFactor: 0.4, color: Colors.orange),
-                                  AudioWaveBar(
-                                      heightFactor: 0.5,
-                                      color: Colors.lightBlueAccent),
-                                  AudioWaveBar(
-                                      heightFactor: 0.6, color: Colors.blue),
-                                  AudioWaveBar(
-                                      heightFactor: 0.7, color: Colors.black),
-                                  AudioWaveBar(heightFactor: 0.8),
-                                  AudioWaveBar(
-                                      heightFactor: 0.9, color: Colors.orange),
-                                ],
-                              ),
+                              child: MyAudioWave(context: context),
                             )
                           : null,
                       filled: true,
@@ -464,11 +449,12 @@ class _ChatPageState extends State<ChatPage> {
                           messagePrompt = messageController.text.toString();
                           _speech.cancel();
                           _isListening = false;
+                          if (messagePrompt.isEmpty) {
+                            return;
+                          }
                           chatList.add(Chat(msg: messagePrompt, chat: 0));
                           chatList.add(Chat(msg: '', chat: 1));
-
                           int n = chatList.length;
-
                           setState(() {
                             messageController.clear();
                             _scrollController.animateTo(
@@ -478,16 +464,27 @@ class _ChatPageState extends State<ChatPage> {
                             );
                           });
 
-                          var submitGetChatsForm2 = await submitGetChatsForm(
-                            context: context,
-                            prompt: messagePrompt,
-                            tokenValue: tokenValue,
-                          );
+                          // var submitGetChatsForm2 = await submitGetChatsForm(
+                          //   context: context,
+                          //   prompt: messagePrompt,
+                          //   tokenValue: tokenValue,
+                          // );
 
                           // set to chatList item at index n-1
+                          final reponse = await chatRepository.send(
+                              context: context,
+                              chat: CustomChatRequest(
+                                  message: messagePrompt,
+                                  conversationId: conversationId,
+                                  parentMessageId: parentMessageId));
 
-                          chatList[n - 1] =
-                              Chat(msg: submitGetChatsForm2, chat: 1);
+                          conversationId = reponse?.conversationId ?? "";
+                          parentMessageId = reponse?.parentMessageId ?? "";
+
+                          chatList[n - 1] = Chat(
+                              msg: reponse?.text ??
+                                  "Sorry, service is temporary unavailable",
+                              chat: 1);
 
                           setState(() {
                             messageController.clear();
@@ -748,36 +745,22 @@ class ChatWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: isMe == true
-          ? MediaQuery.of(context).size.width * 0.6
-          : MediaQuery.of(context).size.width * 0.7,
-      child: DefaultTextStyle(
-          style: TextStyle(
-            color: isMe == true ? Colors.white : Colors.black,
-            fontSize: 16,
-          ),
-          child: isMe
-              ? Text(
-                  text.replaceFirst('\n\n', ''),
-                )
-              : text.isNotEmpty
-                  ? Text(
-                      text.replaceFirst('\n\n', ''),
-                    )
-                  : const Text('Waiting for response...')
-
-          // : AnimatedTextKit(
-          //     animatedTexts: [
-          //       TyperAnimatedText(
-          //         text.replaceFirst('\n\n', ''),
-          //       ),
-          //     ],
-          //     onFinished: () {
-
-          //     },
-          //   ),
-          ),
+    return DefaultTextStyle(
+      style: TextStyle(
+        color: isMe == true ? Colors.white : Colors.black,
+        fontSize: 16,
+      ),
+      child: SizedBox(
+        child: isMe
+            ? Text(
+                text.replaceFirst('\n\n', ''),
+              )
+            : text.isNotEmpty
+                ? Text(
+                    text.replaceFirst('\n\n', ''),
+                  )
+                : const Text('Waiting for response...'),
+      ),
     );
   }
 }

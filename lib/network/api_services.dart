@@ -119,7 +119,7 @@ Future<List<Model>> submitGetModelsForm({
 }
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'https://a6b7-2a09-bac5-d46d-16d2-00-246-e.ap.ngrok.io',
+  baseUrl: 'https://chatgptserver101.herokuapp.com',
   contentType: 'application/json',
 ));
 
@@ -135,7 +135,7 @@ Future<Uint8List> synthesizeSpeech(String text) async {
 }
 
 abstract class ChatRepository {
-  Future<List<CustomChatResponse>> send({
+  Future<CustomChatResponse?> send({
     required BuildContext context,
     required CustomChatRequest chat,
   });
@@ -143,20 +143,15 @@ abstract class ChatRepository {
 
 class ChatRepositoryImpl implements ChatRepository {
   @override
-  Future<List<CustomChatResponse>> send(
+  Future<CustomChatResponse?> send(
       {required BuildContext context, required CustomChatRequest chat}) async {
-    NetworkClient networkClient = NetworkClient();
-    List<CustomChatResponse> chatList = [];
     try {
-      final res = await networkClient.post(
-        "localhost:3000/continue-chat",
-        {"message": chat.message, "temperature": 0},
-      );
-      Map<String, dynamic> mp = jsonDecode(res.toString());
-      debugPrint(mp.toString());
+      final response = await dio.post('/continue-chat', data: chat);
+      Map<String, dynamic> mp = jsonDecode(response.toString());
+      return CustomChatResponse.fromJson(mp);
     } on RemoteException catch (e) {
       Logger().e(e.dioError);
     }
-    return chatList;
+    return null;
   }
 }
