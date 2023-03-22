@@ -9,6 +9,7 @@ import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/models/model.dart';
 import 'package:chatgpt/src/pages/setting.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -35,6 +36,8 @@ class _ChatPageState extends State<ChatPage> {
   List<Chat> chatList = [];
   List<Model> modelsList = [];
   late SharedPreferences prefs;
+  bool isPlayingSound = false;
+
   // final FlutterSoundPlayer player = FlutterSoundPlayer();
   ChatRepository chatRepository = ChatRepositoryImpl();
   final assetsAudioPlayer = AssetsAudioPlayer();
@@ -57,6 +60,13 @@ class _ChatPageState extends State<ChatPage> {
     initPrefs();
     _speech = stt.SpeechToText();
     player = AudioPlayer();
+    assetsAudioPlayer.playlistFinished.listen((finished) {
+      if (finished) {
+        setState(() {
+          isPlayingSound = false;
+        });
+      }
+    });
   }
 
   @override
@@ -180,6 +190,7 @@ class _ChatPageState extends State<ChatPage> {
           itemBuilder: (context, index) => _itemChat(
             chat: chatList[index].chat,
             message: chatList[index].msg,
+            index: index,
           ),
           controller: _scrollController,
         ),
@@ -187,7 +198,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  _itemChat({required int chat, required String message}) {
+  _itemChat({required int chat, required String message, required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -239,67 +250,65 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
-          chat == 1
-              ? GestureDetector(
-                  onTap: () async {
-                    if (Platform.isIOS) {
-                      try {
-                        await assetsAudioPlayer.open(
-                          // Audio.network("http://www.mysite.com/myMp3file.mp3"),
-                          Audio("assets/audio.mp3"),
-                        );
-                      } catch (e) {
-                        print(e);
-                      }
-                      // AudioCache audioPlayer = AudioCache();
-                      // audioPlayer.play('audio.mp3');
-
-                      // final audio = AudioCache().load('audio.mp3');
-
-                      // await player.play(AssetSource('audio.mp3'));
-                      // await player.release();
-                      // player.play()
-                      // await player.setSourceUrl(
-                      //     'https://file-examples.com/storage/fef1706276640fa2f99a5a4/2017/11/file_example_MP3_700KB.mp3');
-                      //                       final audioBytes =
-                      //                           await synthesizeSpeech('Hello, world!');
-                      //                       final directory = await getTemporaryDirectory();
-                      //                       final filePath =
-                      //                           '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.mp3';
-                      // // write the audio bytes to the file
-                      //                       final file = File(filePath);
-                      //                       await file.writeAsBytes(audioBytes);
-                      //                       // play the file
-                      //                       await player.play(DeviceFileSource(file.path));
-                    } else {
-                      
-                      if (isDebounce == true) {
-                        isDebounce = false;
-                        final audioBytes = await synthesizeSpeech(message);
-                        await player.play(BytesSource(audioBytes));
-
-                        Timer(
-                          const Duration(seconds: 3),
-                          () {
-                            isDebounce = true;
-                          },
-                        );
-                      }
-                    }
-                    // player.play();
-                  },
-                  child: const CircleAvatar(
-                    radius: 16,
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                    ),
-                  ),
-                )
-              : Container(),
+          if (chat == 1) ...{
+            GestureDetector(
+              onTap: () async {
+                await playSound(message);
+              },
+              child: CircleAvatar(
+                  radius: 16,
+                  child: !isPlayingSound
+                      ? const Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                        )
+                      : const Icon(
+                          Icons.pause,
+                          color: Colors.white,
+                        )),
+            )
+          } else ...{
+            Container()
+          },
         ],
       ),
     );
+  }
+
+  Future<void> playSound(String message) async {
+    if (Platform.isIOS) {
+      try {
+        setState(() {
+          isPlayingSound = true;
+        });
+        // download file to temporary directory
+        final Directory tempDir = await getTemporaryDirectory();
+        final audioBytes = await synthesizeSpeech(message);
+        // save audio file to temporary directory using tempDir
+        final String path =
+            "${tempDir.path}/synthesized_audio_${DateTime.now().millisecondsSinceEpoch}.mp3";
+        final File file = File(path);
+        await file.writeAsBytes(audioBytes);
+        await assetsAudioPlayer.open(
+          Audio.file(path),
+        );
+        await file.delete();
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      if (isDebounce == true) {
+        isDebounce = false;
+        final audioBytes = await synthesizeSpeech(message);
+        await player.play(BytesSource(audioBytes));
+        Timer(
+          const Duration(seconds: 3),
+          () {
+            isDebounce = true;
+          },
+        );
+      }
+    }
   }
 
   Widget _formChat() {
@@ -737,6 +746,7 @@ class _ChatPageState extends State<ChatPage> {
 class ChatWidget extends StatelessWidget {
   final bool isMe;
   final String text;
+
   const ChatWidget({
     Key? key,
     required this.isMe,
