@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 import '../errors/exceptions.dart';
@@ -123,10 +124,12 @@ final dio = Dio(BaseOptions(
   contentType: 'application/json',
 ));
 
-Future<Uint8List> synthesizeSpeech(String text) async {
+Future<Uint8List> synthesizeSpeech(
+  String text,
+) async {
   final response = await dio.post(
     '/synthesize',
-    data: {'text': text},
+    data: {'text': text, 'voiceName': 'voiceName'.tr},
     options: Options(
       responseType: ResponseType.bytes,
     ),

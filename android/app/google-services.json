@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "86992037195",
+    "project_id": "voicegpt-63042",
+    "storage_bucket": "voicegpt-63042.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:86992037195:android:42f1a707c117fb596a34ce",
+        "android_client_info": {
+          "package_name": "com.example.chatgpt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "86992037195-7rt1v8tollbd0upjd90uv1378c3fq0br.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqYKEpq968iPKjojpOQy7dUgEajCBrRtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "86992037195-7rt1v8tollbd0upjd90uv1378c3fq0br.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

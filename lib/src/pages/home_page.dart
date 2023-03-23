@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:chatgpt/common/constants.dart';
 import 'package:chatgpt/network/admob_service_helper.dart';
 import 'package:chatgpt/src/pages/chat_page.dart';
-import 'package:chatgpt/src/pages/dalle_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -78,6 +78,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     myBanner.load();
     _createInterstitialAd();
+    // _showInterstitialAd();
   }
 
   @override
@@ -103,15 +104,15 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buttonWidget('Generate image idea', () {
-              _showInterstitialAd();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DallePage(),
-                ),
-              );
-            }),
+            // buttonWidget('Generate image idea', () {
+            //   _showInterstitialAd();
+            //   Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //       builder: (context) => const DallePage(),
+            //     ),
+            //   );
+            // }),
             buttonWidget(
               'Chat with GPT',
               () {
@@ -125,11 +126,12 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             buttonWidget("Hire me!", () {
-              // _launchUrl(
-              //   Uri.parse(
-              //     'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
-              //   ),
-              // );
+              _showInterstitialAd();
+              _launchUrl(
+                Uri.parse(
+                  'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
+                ),
+              );
             }),
           ],
         ),
@@ -170,10 +172,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Future<void> _launchUrl(Uri url) async {
-  //   if (!await launchUrl(
-  //     url,
-  //     mode: LaunchMode.externalApplication,
-  //   )) throw 'Could not launch $url';
-  // }
+  Future<void> _launchUrl(Uri url) async {
+    if (!await launchUrl(
+      url,
+      mode: LaunchMode.externalApplication,
+    )) throw 'Could not launch $url';
+  }
 }

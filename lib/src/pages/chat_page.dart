@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
@@ -37,7 +38,6 @@ class _ChatPageState extends State<ChatPage> {
   List<Model> modelsList = [];
   late SharedPreferences prefs;
   bool isPlayingSound = false;
-
   // final FlutterSoundPlayer player = FlutterSoundPlayer();
   ChatRepository chatRepository = ChatRepositoryImpl();
   final assetsAudioPlayer = AssetsAudioPlayer();
@@ -46,12 +46,14 @@ class _ChatPageState extends State<ChatPage> {
   final String _text = 'Press the button and start speaking';
   final ScrollController _scrollController = ScrollController();
   late final AudioPlayer player;
-
   var _currentLocaleId;
 
   bool isDebounce = true;
   String conversationId = '';
   String parentMessageId = '';
+
+  int soundPlayingIndex = -1;
+  final Map<int, bool> soundPlayingMap = {};
 
   @override
   void initState() {
@@ -63,7 +65,7 @@ class _ChatPageState extends State<ChatPage> {
     assetsAudioPlayer.playlistFinished.listen((finished) {
       if (finished) {
         setState(() {
-          isPlayingSound = false;
+          soundPlayingMap[soundPlayingIndex] = false;
         });
       }
     });
@@ -190,6 +192,7 @@ class _ChatPageState extends State<ChatPage> {
           itemBuilder: (context, index) => _itemChat(
             chat: chatList[index].chat,
             message: chatList[index].msg,
+            id: chatList[index].id,
             index: index,
           ),
           controller: _scrollController,
@@ -198,7 +201,12 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  _itemChat({required int chat, required String message, required int index}) {
+  // need to refactor this code. Cuz it's fucking mess
+  _itemChat(
+      {required int chat,
+      required String message,
+      String? id,
+      required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -240,8 +248,11 @@ class _ChatPageState extends State<ChatPage> {
                         //   ),
                         ),
                     child: chat == 0
-                        ? ChatWidget(
-                            text: message, isMe: chat == 0 ? true : false)
+                        ? message.length < 5
+                            ? ChatWidget(text: message, isMe: true)
+                            : SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: ChatWidget(isMe: true, text: message))
                         : SizedBox(
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: ChatWidget(isMe: false, text: message)),
@@ -250,14 +261,14 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
-          if (chat == 1) ...{
+          if (chat == 1 && message.isNotEmpty) ...{
             GestureDetector(
               onTap: () async {
-                await playSound(message);
+                await playSound(message, id, index);
               },
               child: CircleAvatar(
                   radius: 16,
-                  child: !isPlayingSound
+                  child: soundPlayingMap[index] == false
                       ? const Icon(
                           Icons.play_arrow,
                           color: Colors.white,
@@ -275,39 +286,55 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Future<void> playSound(String message) async {
-    if (Platform.isIOS) {
+  Future<void> playSound(String message, String? id, int index) async {
+    if (Platform.isIOS || true) {
       try {
         setState(() {
-          isPlayingSound = true;
+          soundPlayingMap[soundPlayingIndex] = false;
+          soundPlayingIndex = index;
+          soundPlayingMap[index] = true;
         });
         // download file to temporary directory
         final Directory tempDir = await getTemporaryDirectory();
-        final audioBytes = await synthesizeSpeech(message);
         // save audio file to temporary directory using tempDir
-        final String path =
-            "${tempDir.path}/synthesized_audio_${DateTime.now().millisecondsSinceEpoch}.mp3";
+        final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
+        // check if file exists
         final File file = File(path);
-        await file.writeAsBytes(audioBytes);
-        await assetsAudioPlayer.open(
-          Audio.file(path),
-        );
-        await file.delete();
+        file.exists().then((value) async {
+          if (value) {
+            await assetsAudioPlayer.open(
+              Audio.file(path),
+            );
+          } else {
+            final audioBytes = await synthesizeSpeech(message);
+            await file.writeAsBytes(audioBytes);
+            await assetsAudioPlayer.open(
+              Audio.file(path),
+            );
+          }
+        });
       } catch (e) {
-        print(e);
+        //
       }
-    } else {
-      if (isDebounce == true) {
-        isDebounce = false;
-        final audioBytes = await synthesizeSpeech(message);
-        await player.play(BytesSource(audioBytes));
-        Timer(
-          const Duration(seconds: 3),
-          () {
-            isDebounce = true;
-          },
-        );
-      }
+      // } else {
+      //   if (isDebounce == true) {
+      //     isDebounce = false;
+      //     AudioCache cache = AudioCache();
+      //     final audioBytes = await synthesizeSpeech(message);
+      //     final byteSouce = BytesSource(audioBytes);
+      //     // save audio file to temporary directory using tempDir
+      //     final Directory tempDir = await getTemporaryDirectory();
+      //     final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
+
+      //     await player.play(byteSouce);
+      //     Timer(
+      //       const Duration(seconds: 3),
+      //       () {
+      //         isDebounce = true;
+      //       },
+      //     );
+      //   }
+      // }
     }
   }
 
@@ -461,9 +488,21 @@ class _ChatPageState extends State<ChatPage> {
                           if (messagePrompt.isEmpty) {
                             return;
                           }
-                          chatList.add(Chat(msg: messagePrompt, chat: 0));
-                          chatList.add(Chat(msg: '', chat: 1));
+                          chatList.add(Chat(
+                              msg: messagePrompt,
+                              chat: 0,
+                              // timestemp for file
+                              id: '${DateTime.now().millisecondsSinceEpoch}'));
+                          chatList.add(Chat(
+                              msg: '',
+                              chat: 1,
+                              id: '${DateTime.now().millisecondsSinceEpoch}'));
+
                           int n = chatList.length;
+
+                          soundPlayingMap[n - 1] = false;
+                          soundPlayingMap[n - 2] = false;
+
                           setState(() {
                             messageController.clear();
                             _scrollController.animateTo(
@@ -493,7 +532,14 @@ class _ChatPageState extends State<ChatPage> {
                           chatList[n - 1] = Chat(
                               msg: reponse?.text ??
                                   "Sorry, service is temporary unavailable",
-                              chat: 1);
+                              chat: 1,
+                              id: parentMessageId);
+
+                          await playSound(
+                              reponse?.text ??
+                                  "Sorry, service is temporary unavailable",
+                              parentMessageId,
+                              n - 1);
 
                           setState(() {
                             messageController.clear();
@@ -766,8 +812,14 @@ class ChatWidget extends StatelessWidget {
                 text.replaceFirst('\n\n', ''),
               )
             : text.isNotEmpty
-                ? Text(
-                    text.replaceFirst('\n\n', ''),
+                ? AnimatedTextKit(
+                    animatedTexts: [
+                      TyperAnimatedText(
+                        text.replaceFirst('\n\n', ''),
+                      ),
+                    ],
+                    repeatForever: false,
+                    totalRepeatCount: 1,
                   )
                 : const Text('Waiting for response...'),
       ),

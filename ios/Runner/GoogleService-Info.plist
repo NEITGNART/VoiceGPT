@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>86992037195-s778se1sq38avs5d0d7fsr572tibc8bq.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.86992037195-s778se1sq38avs5d0d7fsr572tibc8bq</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCgzIVqoD14TQ_Niq_SK-8zNcrBPRYLhak</string>
+	<key>GCM_SENDER_ID</key>
+	<string>86992037195</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.chatgpt</string>
+	<key>PROJECT_ID</key>
+	<string>voicegpt-63042</string>
+	<key>STORAGE_BUCKET</key>
+	<string>voicegpt-63042.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:86992037195:ios:1289a4f760178eab6a34ce</string>
+</dict>
+</plist>

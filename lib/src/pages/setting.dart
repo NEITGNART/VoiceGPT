@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SettingPage extends StatelessWidget {
   const SettingPage({super.key});
@@ -24,10 +25,15 @@ class SettingPage extends StatelessWidget {
               ],
             ),
             // change language
-            const Row(children: [
-              Icon(Icons.language),
-              Text('Change Language'),
-            ])
+            InkWell(
+              onTap: () {
+                Get.updateLocale(const Locale('vi', 'VN'));
+              },
+              child: Row(children: [
+                const Icon(Icons.language),
+                Text('language'.tr),
+              ]),
+            )
           ],
         ),
       ),
