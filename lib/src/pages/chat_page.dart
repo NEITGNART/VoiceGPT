@@ -47,21 +47,21 @@ class _ChatPageState extends State<ChatPage> {
   final ScrollController _scrollController = ScrollController();
   late final AudioPlayer player;
   var _currentLocaleId;
-
   bool isDebounce = true;
   String conversationId = '';
   String parentMessageId = '';
-
   int soundPlayingIndex = -1;
   final Map<int, bool> soundPlayingMap = {};
+
+  late bool isAutoPlaying;
 
   @override
   void initState() {
     super.initState();
-    getModels();
     initPrefs();
     _speech = stt.SpeechToText();
     player = AudioPlayer();
+    soundPlayingMap[soundPlayingIndex] = false;
     assetsAudioPlayer.playlistFinished.listen((finished) {
       if (finished) {
         setState(() {
@@ -77,10 +77,6 @@ class _ChatPageState extends State<ChatPage> {
     player.dispose();
   }
 
-  void getModels() async {
-    modelsList = await submitGetModelsForm(context: context);
-  }
-
   List<DropdownMenuItem<String>> get models {
     List<DropdownMenuItem<String>> menuItems =
         List.generate(modelsList.length, (i) {
@@ -94,7 +90,8 @@ class _ChatPageState extends State<ChatPage> {
 
   void initPrefs() async {
     prefs = await SharedPreferences.getInstance();
-    tokenValue = prefs.getInt("token") ?? 500;
+    // tokenValue = prefs.getInt("token") ?? 500;
+    isAutoPlaying = prefs.getBool("isAutoPlaying") ?? true;
   }
 
   TextEditingController messageController = TextEditingController();
@@ -261,22 +258,24 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
-          if (chat == 1 && message.isNotEmpty) ...{
+          if (chat == 1 && message.isNotEmpty && !_isListening) ...{
             GestureDetector(
               onTap: () async {
+                // caused this is asynchronous to play sound, sometimes it doesn't play sound
                 await playSound(message, id, index);
               },
               child: CircleAvatar(
-                  radius: 16,
-                  child: soundPlayingMap[index] == false
-                      ? const Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                        )
-                      : const Icon(
-                          Icons.pause,
-                          color: Colors.white,
-                        )),
+                radius: 18,
+                child: soundPlayingMap[index] == false
+                    ? const Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                      )
+                    : const Icon(
+                        Icons.pause,
+                        color: Colors.white,
+                      ),
+              ),
             )
           } else ...{
             Container()
@@ -290,11 +289,25 @@ class _ChatPageState extends State<ChatPage> {
     if (Platform.isIOS || true) {
       try {
         setState(() {
-          soundPlayingMap[soundPlayingIndex] = false;
+          if (isPlayingSound == true &&
+              index != -1 &&
+              index != soundPlayingIndex) {
+            soundPlayingMap[soundPlayingIndex] = false;
+            isPlayingSound = true;
+          } else {
+            isPlayingSound = !isPlayingSound;
+          }
+          // flip the playing
+          soundPlayingMap[index] = isPlayingSound;
+          // When the audio is finised playing, reset the index. We know the index to pause icon
           soundPlayingIndex = index;
-          soundPlayingMap[index] = true;
         });
-        // download file to temporary directory
+
+        if (isPlayingSound == false) {
+          assetsAudioPlayer.pause();
+          return;
+        }
+
         final Directory tempDir = await getTemporaryDirectory();
         // save audio file to temporary directory using tempDir
         final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
@@ -304,6 +317,7 @@ class _ChatPageState extends State<ChatPage> {
           if (value) {
             await assetsAudioPlayer.open(
               Audio.file(path),
+              // pause
             );
           } else {
             final audioBytes = await synthesizeSpeech(message);
@@ -425,25 +439,27 @@ class _ChatPageState extends State<ChatPage> {
               //  messageController.text.isNotEmpty
 
               if (!_isListening && messageController.text.isEmpty) ...{
-                InkWell(
-                  onTap: () {
-                    _listen();
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    margin: const EdgeInsets.only(left: 5, right: 5),
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                if (soundPlayingMap[soundPlayingIndex] == false)
+                  InkWell(
+                    onTap: () {
+                      _listen();
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      margin: const EdgeInsets.only(left: 5, right: 5),
+                      padding: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10)),
+                      ),
+                      child: const Icon(
+                        Icons.mic,
+                        color: Colors.black,
+                      ),
                     ),
-                    child: const Icon(
-                      Icons.mic,
-                      color: Colors.black,
-                    ),
-                  ),
-                )
+                  )
               },
               // const Expanded(child: FlowMenu()),
               // adding animation to the send button
@@ -534,12 +550,13 @@ class _ChatPageState extends State<ChatPage> {
                                   "Sorry, service is temporary unavailable",
                               chat: 1,
                               id: parentMessageId);
-
-                          await playSound(
-                              reponse?.text ??
-                                  "Sorry, service is temporary unavailable",
-                              parentMessageId,
-                              n - 1);
+                          if (isAutoPlaying == true) {
+                            await playSound(
+                                reponse?.text ??
+                                    "Sorry, service is temporary unavailable",
+                                parentMessageId,
+                                n - 1);
+                          }
 
                           setState(() {
                             messageController.clear();
