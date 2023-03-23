@@ -1,6 +1,8 @@
 import 'package:chatgpt/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -12,8 +14,9 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
+    Get.create(() => stt.SpeechToText());
     super.initState();
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 2000), () {
       setState(() {
         // Here we are going to the City List Screen
         // we can make isProduction : true for showing active=true cities

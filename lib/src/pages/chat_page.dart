@@ -10,6 +10,7 @@ import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/models/model.dart';
 import 'package:chatgpt/src/pages/setting.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -46,7 +47,7 @@ class _ChatPageState extends State<ChatPage> {
   final String _text = 'Press the button and start speaking';
   final ScrollController _scrollController = ScrollController();
   late final AudioPlayer player;
-  var _currentLocaleId;
+  String? _currentLocaleId;
   bool isDebounce = true;
   String conversationId = '';
   String parentMessageId = '';
@@ -59,7 +60,8 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     initPrefs();
-    _speech = stt.SpeechToText();
+    _speech = Get.find<stt.SpeechToText>();
+
     player = AudioPlayer();
     soundPlayingMap[soundPlayingIndex] = false;
     assetsAudioPlayer.playlistFinished.listen((finished) {
@@ -88,10 +90,12 @@ class _ChatPageState extends State<ChatPage> {
     return menuItems;
   }
 
-  void initPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    // tokenValue = prefs.getInt("token") ?? 500;
-    isAutoPlaying = prefs.getBool("isAutoPlaying") ?? true;
+  void initPrefs() {
+    prefs = Get.find<SharedPreferences>();
+    isAutoPlaying = prefs.getBool("isAutoPlay") ?? true;
+    _currentLocaleId = prefs.getString("localeId");
+    debugPrint("_currentLocaleId: $_currentLocaleId");
+    setState(() {});
   }
 
   TextEditingController messageController = TextEditingController();
@@ -100,19 +104,19 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            CircleAvatar(
+            const CircleAvatar(
               radius: 20,
               backgroundImage: AssetImage("assets/images/chat-bot.png"),
             ),
-            SizedBox(width: 10),
-            Text('Super Chat App'),
+            const SizedBox(width: 10),
+            Text('botname'.tr),
           ],
         ),
-        actions: [
-          MySetting(),
-        ],
+        // actions: [
+        //   MySetting(),
+        // ],
       ),
       body: SafeArea(
         child: Container(
@@ -378,11 +382,11 @@ class _ChatPageState extends State<ChatPage> {
                       setState(() {
                         if (value.length == textLimit) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              duration: Duration(milliseconds: 500),
+                            SnackBar(
+                              duration: const Duration(milliseconds: 500),
                               content: Text(
-                                'Message is too long',
-                                style: TextStyle(color: Colors.white),
+                                'longMessage'.tr,
+                                style: const TextStyle(color: Colors.white),
                               ),
                               backgroundColor: Colors.red,
                             ),
@@ -406,7 +410,7 @@ class _ChatPageState extends State<ChatPage> {
                     minLines: 1,
                     controller: messageController,
                     decoration: InputDecoration(
-                      hintText: !_isListening ? 'Type or Press the Mic' : '',
+                      hintText: !_isListening ? 'hint'.tr : '',
                       border: const OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.grey,
@@ -550,6 +554,7 @@ class _ChatPageState extends State<ChatPage> {
                                   "Sorry, service is temporary unavailable",
                               chat: 1,
                               id: parentMessageId);
+
                           if (isAutoPlaying == true) {
                             await playSound(
                                 reponse?.text ??
@@ -779,8 +784,22 @@ class _ChatPageState extends State<ChatPage> {
           // onError: (val) => print('onError: $val'),
           );
       if (available) {
+        // var locales = await _speech.locales();
+        // put locales to Setting page
+
+        // Get.to(() => SettingPage(locales: locales));
+
+        // // print('locales': locales);
+        // logger.i('locales: $locales');
+        // // locale vietnamese
+
+        // for (var element in locales) {
+        //   // logg element
+        //   logger.i('element: ${element.name}');
+        // }
         setState(() => _isListening = true);
         _speech.listen(
+          localeId: _currentLocaleId,
           onResult: (val) => setState(
             () {
               messageController.text = val.recognizedWords;
@@ -838,7 +857,7 @@ class ChatWidget extends StatelessWidget {
                     repeatForever: false,
                     totalRepeatCount: 1,
                   )
-                : const Text('Waiting for response...'),
+                : Text('waiting'.tr),
       ),
     );
   }

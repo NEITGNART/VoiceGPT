@@ -1,9 +1,14 @@
 import 'dart:developer';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/common/constants.dart';
 import 'package:chatgpt/network/admob_service_helper.dart';
 import 'package:chatgpt/src/pages/chat_page.dart';
+import 'package:chatgpt/src/pages/setting.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -85,55 +90,105 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Welcome to Happy Chat',
-          style: TextStyle(color: Colors.black),
+        title: Row(
+          children: [
+            CircleAvatar(
+              child: SvgPicture.asset(
+                'assets/setting.svg',
+              ),
+            ),
+            gapW20,
+            Expanded(
+              child: AnimatedTextKit(
+                animatedTexts: [
+                  TyperAnimatedText(
+                    textStyle: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    'welcome'.tr,
+                  ),
+                ],
+                repeatForever: true,
+              ),
+            )
+          ],
         ),
         backgroundColor: Colors.white,
         elevation: 1,
         centerTitle: true,
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/chat-bot.png'),
-            opacity: 0.7,
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // buttonWidget('Generate image idea', () {
-            //   _showInterstitialAd();
-            //   Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //       builder: (context) => const DallePage(),
-            //     ),
-            //   );
-            // }),
-            buttonWidget(
-              'Chat with GPT',
-              () {
-                _showInterstitialAd();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ChatPage(),
-                  ),
-                );
-              },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  const Color(0xffadf7f2).withOpacity(0.7),
+                  const Color(0xff15aaff),
+                  // Color(0xffFED8F7),
+                  // Color(0xffC4DDFE),
+                ],
+              ),
             ),
-            buttonWidget("Hire me!", () {
-              _showInterstitialAd();
-              _launchUrl(
-                Uri.parse(
-                  'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // buttonWidget('Generate image idea', () {
+                //   _showInterstitialAd();
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => const DallePage(),
+                //     ),
+                //   );
+                // }),
+                buttonWidget(
+                  'nav_chat'.tr,
+                  () {
+                    _showInterstitialAd();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatPage(),
+                      ),
+                    );
+                  },
+                  SvgPicture.asset('assets/chat.svg', height: 40),
                 ),
-              );
-            }),
-          ],
+                buttonWidget(
+                  'setting'.tr,
+                  () {
+                    _showInterstitialAd();
+                    Get.to(
+                      () => const SettingPage(),
+                    );
+                  },
+                  SvgPicture.asset('assets/settings.svg', height: 40),
+                ),
+                buttonWidget(
+                  'contact'.tr,
+                  () {
+                    _showInterstitialAd();
+                    _launchUrl(
+                      Uri.parse(
+                        'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
+                      ),
+                    );
+                  },
+                  SvgPicture.asset('assets/contact.svg', height: 40),
+                ),
+                SvgPicture.asset(
+                  'assets/hi.svg',
+                  height: 300,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -145,28 +200,38 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buttonWidget(String text, VoidCallback onTap) {
+  Widget buttonWidget(String text, VoidCallback onTap, Widget icon) {
     return InkWell(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: Colors.grey.shade400,
+            color: Colors.blue,
           ),
         ),
         padding: const EdgeInsets.symmetric(
           vertical: 40,
+          horizontal: 10,
         ),
         margin: const EdgeInsets.symmetric(
           horizontal: 10,
           vertical: 5,
         ),
-        child: Center(
-          child: Text(text,
-              style: kTitle1Style.copyWith(
-                color: Colors.black,
-              )),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            icon,
+            gapW20,
+            Expanded(
+              child: Text(
+                text,
+                style: kTitle1Style.copyWith(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
