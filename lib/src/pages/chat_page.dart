@@ -8,7 +8,6 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/models/model.dart';
-import 'package:chatgpt/src/pages/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -39,12 +38,10 @@ class _ChatPageState extends State<ChatPage> {
   List<Model> modelsList = [];
   late SharedPreferences prefs;
   bool isPlayingSound = false;
-  // final FlutterSoundPlayer player = FlutterSoundPlayer();
   ChatRepository chatRepository = ChatRepositoryImpl();
   final assetsAudioPlayer = AssetsAudioPlayer();
   late stt.SpeechToText _speech;
   bool _isListening = false;
-  final String _text = 'Press the button and start speaking';
   final ScrollController _scrollController = ScrollController();
   late final AudioPlayer player;
   String? _currentLocaleId;
@@ -53,6 +50,7 @@ class _ChatPageState extends State<ChatPage> {
   String parentMessageId = '';
   int soundPlayingIndex = -1;
   final Map<int, bool> soundPlayingMap = {};
+  TextEditingController messageController = TextEditingController();
 
   late bool isAutoPlaying;
 
@@ -77,28 +75,18 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     super.dispose();
     player.dispose();
-  }
-
-  List<DropdownMenuItem<String>> get models {
-    List<DropdownMenuItem<String>> menuItems =
-        List.generate(modelsList.length, (i) {
-      return DropdownMenuItem(
-        value: modelsList[i].id,
-        child: Text(modelsList[i].id),
-      );
-    });
-    return menuItems;
+    assetsAudioPlayer.dispose();
+    _scrollController.dispose();
+    messageController.dispose();
   }
 
   void initPrefs() {
     prefs = Get.find<SharedPreferences>();
-    isAutoPlaying = prefs.getBool("isAutoPlay") ?? true;
-    _currentLocaleId = prefs.getString("localeId");
-    debugPrint("_currentLocaleId: $_currentLocaleId");
+    isAutoPlaying = prefs.getBool('isAutoPlay') ?? false;
+    _currentLocaleId = prefs.getString('localeId');
+    // debugPrint("_currentLocaleId: $_currentLocaleId");
     setState(() {});
   }
-
-  TextEditingController messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -141,35 +129,6 @@ class _ChatPageState extends State<ChatPage> {
 
   int getData() {
     return prefs.getInt("token") ?? 1;
-  }
-
-  _topChat() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              // color border
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const Text(
-            'Chat GPT',
-            style: TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          MySetting(),
-        ],
-      ),
-    );
   }
 
   Widget _bodyChat() {
@@ -269,7 +228,7 @@ class _ChatPageState extends State<ChatPage> {
                 await playSound(message, id, index);
               },
               child: CircleAvatar(
-                radius: 18,
+                radius: 20,
                 child: soundPlayingMap[index] == false
                     ? const Icon(
                         Icons.play_arrow,
@@ -392,17 +351,6 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                           );
                         }
-                        // if (value.length >= 5 && isDebounce == true) {
-                        //   isDebounce = false;
-
-                        //   Timer(
-                        //     const Duration(seconds: 3),
-                        //     () {
-                        //       isDebounce = true;
-                        //     },
-                        //   );
-                        // }
-                        // messagePrompt = value;
                       });
                     },
                     // croll if the textfield is overflow
@@ -539,28 +487,49 @@ class _ChatPageState extends State<ChatPage> {
                           // );
 
                           // set to chatList item at index n-1
-                          final reponse = await chatRepository.send(
-                              context: context,
-                              chat: CustomChatRequest(
-                                  message: messagePrompt,
-                                  conversationId: conversationId,
-                                  parentMessageId: parentMessageId));
+                          try {
+                            final reponse = await chatRepository.send(
+                                context: context,
+                                chat: CustomChatRequest(
+                                    message: messagePrompt,
+                                    conversationId: conversationId,
+                                    parentMessageId: parentMessageId));
 
-                          conversationId = reponse?.conversationId ?? "";
-                          parentMessageId = reponse?.parentMessageId ?? "";
+                            conversationId = reponse?.conversationId ?? "";
+                            parentMessageId = reponse?.parentMessageId ?? "";
 
-                          chatList[n - 1] = Chat(
-                              msg: reponse?.text ??
-                                  "Sorry, service is temporary unavailable",
-                              chat: 1,
-                              id: parentMessageId);
-
-                          if (isAutoPlaying == true) {
-                            await playSound(
-                                reponse?.text ??
+                            chatList[n - 1] = Chat(
+                                msg: reponse?.text ??
                                     "Sorry, service is temporary unavailable",
-                                parentMessageId,
-                                n - 1);
+                                chat: 1,
+                                id: parentMessageId);
+
+                            if (isAutoPlaying == true) {
+                              try {
+                                await playSound(
+                                    reponse?.text ??
+                                        "Sorry, service is temporary unavailable",
+                                    parentMessageId,
+                                    n - 1);
+                              } catch (e) {
+                                chatList.add(Chat(
+                                    msg:
+                                        "Sorry, service is temporary unavailable",
+                                    chat: 1,
+                                    id: parentMessageId));
+                                int m = chatList.length;
+                                chatList[m - 1] = Chat(
+                                    msg:
+                                        "Sorry, the voice service is temporary unavailable",
+                                    chat: 1,
+                                    id: parentMessageId);
+                              }
+                            }
+                          } catch (e) {
+                            chatList[n - 1] = Chat(
+                                msg: "Sorry, service is temporary unavailable",
+                                chat: 1,
+                                id: parentMessageId);
                           }
 
                           setState(() {
@@ -643,139 +612,139 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  GestureDetector MySetting() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, _createRoute());
+  // GestureDetector MySetting() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       Navigator.push(context, _createRoute());
 
-        // showModalBottomSheet<void>(
-        //   context: context,
-        //   backgroundColor: Colors.transparent,
-        //   builder: (BuildContext context) {
-        //     return StatefulBuilder(
-        //         builder: (BuildContext context, StateSetter state) {
-        //       return Container(
-        //         height: 400,
-        //         decoration: const BoxDecoration(
-        //             color: Colors.white,
-        //             borderRadius: BorderRadius.only(
-        //               topLeft: Radius.circular(20),
-        //               topRight: Radius.circular(20),
-        //             )),
-        //         child: Column(
-        //           mainAxisAlignment: MainAxisAlignment.start,
-        //           mainAxisSize: MainAxisSize.min,
-        //           children: <Widget>[
-        //             const Padding(
-        //               padding: EdgeInsets.symmetric(vertical: 15.0),
-        //               child: Text(
-        //                 'Settings',
-        //                 style: TextStyle(
-        //                   color: Color(0xFFF75555),
-        //                   fontWeight: FontWeight.bold,
-        //                 ),
-        //               ),
-        //             ),
-        //             Divider(
-        //               color: Colors.grey.shade700,
-        //             ),
-        //             Padding(
-        //               padding: const EdgeInsets.fromLTRB(20, 2, 20, 2),
-        //               child: DropdownButtonFormField(
-        //                 items: models,
-        //                 borderRadius: const BorderRadius.only(),
-        //                 focusColor: Colors.amber,
-        //                 onChanged: (String? s) {},
-        //                 decoration:
-        //                     const InputDecoration(hintText: "Select Model"),
-        //               ),
-        //             ),
-        //             const Padding(
-        //               padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
-        //               child: Align(
-        //                   alignment: Alignment.topLeft, child: Text("Token")),
-        //             ),
-        //             Slider(
-        //               min: 0,
-        //               max: 1000,
-        //               activeColor: const Color(0xFFE58500),
-        //               inactiveColor: const Color.fromARGB(255, 230, 173, 92),
-        //               value: tokenValue.toDouble(),
-        //               onChanged: (value) {
-        //                 state(() {
-        //                   tokenValue = value.round();
-        //                 });
-        //               },
-        //             ),
-        //             Padding(
-        //               padding: const EdgeInsets.symmetric(vertical: 10.0),
-        //               child: Row(
-        //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //                 children: [
-        //                   InkWell(
-        //                     onTap: () {
-        //                       Navigator.of(context).pop(false);
-        //                     },
-        //                     child: Container(
-        //                       width: MediaQuery.of(context).size.width / 2.2,
-        //                       decoration: BoxDecoration(
-        //                         color: Colors.grey.shade200,
-        //                         borderRadius: BorderRadius.circular(40),
-        //                       ),
-        //                       padding: const EdgeInsets.symmetric(
-        //                           vertical: 15, horizontal: 20),
-        //                       child: const Center(
-        //                         child: Text(
-        //                           'Cancel',
-        //                           style: TextStyle(
-        //                             color: Colors.black,
-        //                             fontWeight: FontWeight.bold,
-        //                           ),
-        //                         ),
-        //                       ),
-        //                     ),
-        //                   ),
-        //                   InkWell(
-        //                     onTap: () {
-        //                       saveData(tokenValue);
-        //                       Navigator.of(context).pop(false);
-        //                     },
-        //                     child: Container(
-        //                       width: MediaQuery.of(context).size.width / 2.2,
-        //                       decoration: BoxDecoration(
-        //                         color: const Color(0xFFE58500),
-        //                         borderRadius: BorderRadius.circular(40),
-        //                       ),
-        //                       padding: const EdgeInsets.symmetric(
-        //                           vertical: 15, horizontal: 20),
-        //                       child: const Center(
-        //                         child: Text(
-        //                           'Save',
-        //                           style: TextStyle(
-        //                             color: Colors.black,
-        //                             fontWeight: FontWeight.bold,
-        //                           ),
-        //                         ),
-        //                       ),
-        //                     ),
-        //                   )
-        //                 ],
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //       );
-        //     });
-        //   },
-        // );
-      },
-      child: const Icon(
-        Icons.more_vert_rounded,
-        size: 25,
-        color: Colors.white,
-      ),
-    );
-  }
+  //       // showModalBottomSheet<void>(
+  //       //   context: context,
+  //       //   backgroundColor: Colors.transparent,
+  //       //   builder: (BuildContext context) {
+  //       //     return StatefulBuilder(
+  //       //         builder: (BuildContext context, StateSetter state) {
+  //       //       return Container(
+  //       //         height: 400,
+  //       //         decoration: const BoxDecoration(
+  //       //             color: Colors.white,
+  //       //             borderRadius: BorderRadius.only(
+  //       //               topLeft: Radius.circular(20),
+  //       //               topRight: Radius.circular(20),
+  //       //             )),
+  //       //         child: Column(
+  //       //           mainAxisAlignment: MainAxisAlignment.start,
+  //       //           mainAxisSize: MainAxisSize.min,
+  //       //           children: <Widget>[
+  //       //             const Padding(
+  //       //               padding: EdgeInsets.symmetric(vertical: 15.0),
+  //       //               child: Text(
+  //       //                 'Settings',
+  //       //                 style: TextStyle(
+  //       //                   color: Color(0xFFF75555),
+  //       //                   fontWeight: FontWeight.bold,
+  //       //                 ),
+  //       //               ),
+  //       //             ),
+  //       //             Divider(
+  //       //               color: Colors.grey.shade700,
+  //       //             ),
+  //       //             Padding(
+  //       //               padding: const EdgeInsets.fromLTRB(20, 2, 20, 2),
+  //       //               child: DropdownButtonFormField(
+  //       //                 items: models,
+  //       //                 borderRadius: const BorderRadius.only(),
+  //       //                 focusColor: Colors.amber,
+  //       //                 onChanged: (String? s) {},
+  //       //                 decoration:
+  //       //                     const InputDecoration(hintText: "Select Model"),
+  //       //               ),
+  //       //             ),
+  //       //             const Padding(
+  //       //               padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
+  //       //               child: Align(
+  //       //                   alignment: Alignment.topLeft, child: Text("Token")),
+  //       //             ),
+  //       //             Slider(
+  //       //               min: 0,
+  //       //               max: 1000,
+  //       //               activeColor: const Color(0xFFE58500),
+  //       //               inactiveColor: const Color.fromARGB(255, 230, 173, 92),
+  //       //               value: tokenValue.toDouble(),
+  //       //               onChanged: (value) {
+  //       //                 state(() {
+  //       //                   tokenValue = value.round();
+  //       //                 });
+  //       //               },
+  //       //             ),
+  //       //             Padding(
+  //       //               padding: const EdgeInsets.symmetric(vertical: 10.0),
+  //       //               child: Row(
+  //       //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       //                 children: [
+  //       //                   InkWell(
+  //       //                     onTap: () {
+  //       //                       Navigator.of(context).pop(false);
+  //       //                     },
+  //       //                     child: Container(
+  //       //                       width: MediaQuery.of(context).size.width / 2.2,
+  //       //                       decoration: BoxDecoration(
+  //       //                         color: Colors.grey.shade200,
+  //       //                         borderRadius: BorderRadius.circular(40),
+  //       //                       ),
+  //       //                       padding: const EdgeInsets.symmetric(
+  //       //                           vertical: 15, horizontal: 20),
+  //       //                       child: const Center(
+  //       //                         child: Text(
+  //       //                           'Cancel',
+  //       //                           style: TextStyle(
+  //       //                             color: Colors.black,
+  //       //                             fontWeight: FontWeight.bold,
+  //       //                           ),
+  //       //                         ),
+  //       //                       ),
+  //       //                     ),
+  //       //                   ),
+  //       //                   InkWell(
+  //       //                     onTap: () {
+  //       //                       saveData(tokenValue);
+  //       //                       Navigator.of(context).pop(false);
+  //       //                     },
+  //       //                     child: Container(
+  //       //                       width: MediaQuery.of(context).size.width / 2.2,
+  //       //                       decoration: BoxDecoration(
+  //       //                         color: const Color(0xFFE58500),
+  //       //                         borderRadius: BorderRadius.circular(40),
+  //       //                       ),
+  //       //                       padding: const EdgeInsets.symmetric(
+  //       //                           vertical: 15, horizontal: 20),
+  //       //                       child: const Center(
+  //       //                         child: Text(
+  //       //                           'Save',
+  //       //                           style: TextStyle(
+  //       //                             color: Colors.black,
+  //       //                             fontWeight: FontWeight.bold,
+  //       //                           ),
+  //       //                         ),
+  //       //                       ),
+  //       //                     ),
+  //       //                   )
+  //       //                 ],
+  //       //               ),
+  //       //             ),
+  //       //           ],
+  //       //         ),
+  //       //       );
+  //       //     });
+  //       //   },
+  //       // );
+  //     },
+  //     child: const Icon(
+  //       Icons.more_vert_rounded,
+  //       size: 25,
+  //       color: Colors.white,
+  //     ),
+  //   );
+  // }
 
   void _listen() async {
     if (!_isListening) {
@@ -815,13 +784,6 @@ class _ChatPageState extends State<ChatPage> {
         _isListening = false;
       });
     }
-  }
-
-  void _switchLang(selectedVal) {
-    setState(() {
-      _currentLocaleId = selectedVal;
-    });
-    print(selectedVal);
   }
 }
 
@@ -863,118 +825,118 @@ class ChatWidget extends StatelessWidget {
   }
 }
 
-class FlowMenu extends StatefulWidget {
-  const FlowMenu({super.key});
+// class FlowMenu extends StatefulWidget {
+//   const FlowMenu({super.key});
 
-  @override
-  State<FlowMenu> createState() => _FlowMenuState();
-}
+//   @override
+//   State<FlowMenu> createState() => _FlowMenuState();
+// }
 
-class _FlowMenuState extends State<FlowMenu>
-    with SingleTickerProviderStateMixin {
-  late AnimationController menuAnimation;
-  IconData lastTapped = Icons.notifications;
-  final List<IconData> menuItems = <IconData>[
-    Icons.home,
-    Icons.new_releases,
-    Icons.notifications,
-    Icons.settings,
-    Icons.menu,
-  ];
+// class _FlowMenuState extends State<FlowMenu>
+//     with SingleTickerProviderStateMixin {
+//   late AnimationController menuAnimation;
+//   IconData lastTapped = Icons.notifications;
+//   final List<IconData> menuItems = <IconData>[
+//     Icons.home,
+//     Icons.new_releases,
+//     Icons.notifications,
+//     Icons.settings,
+//     Icons.menu,
+//   ];
 
-  void _updateMenu(IconData icon) {
-    if (icon != Icons.menu) {
-      setState(() => lastTapped = icon);
-    }
-  }
+//   void _updateMenu(IconData icon) {
+//     if (icon != Icons.menu) {
+//       setState(() => lastTapped = icon);
+//     }
+//   }
 
-  @override
-  void initState() {
-    super.initState();
-    menuAnimation = AnimationController(
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-    );
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     menuAnimation = AnimationController(
+//       duration: const Duration(milliseconds: 250),
+//       vsync: this,
+//     );
+//   }
 
-  Widget flowMenuItem(IconData icon) {
-    final double buttonDiameter =
-        MediaQuery.of(context).size.width / menuItems.length;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: RawMaterialButton(
-        fillColor: lastTapped == icon ? Colors.amber[700] : Colors.blue,
-        splashColor: Colors.amber[100],
-        shape: const CircleBorder(),
-        constraints: BoxConstraints.tight(Size(buttonDiameter, buttonDiameter)),
-        onPressed: () {
-          _updateMenu(icon);
-          menuAnimation.status == AnimationStatus.completed
-              ? menuAnimation.reverse()
-              : menuAnimation.forward();
-        },
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 45.0,
-        ),
-      ),
-    );
-  }
+//   Widget flowMenuItem(IconData icon) {
+//     final double buttonDiameter =
+//         MediaQuery.of(context).size.width / menuItems.length;
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 8.0),
+//       child: RawMaterialButton(
+//         fillColor: lastTapped == icon ? Colors.amber[700] : Colors.blue,
+//         splashColor: Colors.amber[100],
+//         shape: const CircleBorder(),
+//         constraints: BoxConstraints.tight(Size(buttonDiameter, buttonDiameter)),
+//         onPressed: () {
+//           _updateMenu(icon);
+//           menuAnimation.status == AnimationStatus.completed
+//               ? menuAnimation.reverse()
+//               : menuAnimation.forward();
+//         },
+//         child: Icon(
+//           icon,
+//           color: Colors.white,
+//           size: 45.0,
+//         ),
+//       ),
+//     );
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Flow(
-      delegate: FlowMenuDelegate(menuAnimation: menuAnimation),
-      children:
-          menuItems.map<Widget>((IconData icon) => flowMenuItem(icon)).toList(),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Flow(
+//       delegate: FlowMenuDelegate(menuAnimation: menuAnimation),
+//       children:
+//           menuItems.map<Widget>((IconData icon) => flowMenuItem(icon)).toList(),
+//     );
+//   }
+// }
 
-class FlowMenuDelegate extends FlowDelegate {
-  FlowMenuDelegate({required this.menuAnimation})
-      : super(repaint: menuAnimation);
+// class FlowMenuDelegate extends FlowDelegate {
+//   FlowMenuDelegate({required this.menuAnimation})
+//       : super(repaint: menuAnimation);
 
-  final Animation<double> menuAnimation;
+//   final Animation<double> menuAnimation;
 
-  @override
-  bool shouldRepaint(FlowMenuDelegate oldDelegate) {
-    return menuAnimation != oldDelegate.menuAnimation;
-  }
+//   @override
+//   bool shouldRepaint(FlowMenuDelegate oldDelegate) {
+//     return menuAnimation != oldDelegate.menuAnimation;
+//   }
 
-  @override
-  void paintChildren(FlowPaintingContext context) {
-    double dx = 0.0;
-    for (int i = 0; i < context.childCount; ++i) {
-      dx = context.getChildSize(i)!.width * i;
-      context.paintChild(
-        i,
-        transform: Matrix4.translationValues(
-          dx * menuAnimation.value,
-          0,
-          0,
-        ),
-      );
-    }
-  }
-}
+//   @override
+//   void paintChildren(FlowPaintingContext context) {
+//     double dx = 0.0;
+//     for (int i = 0; i < context.childCount; ++i) {
+//       dx = context.getChildSize(i)!.width * i;
+//       context.paintChild(
+//         i,
+//         transform: Matrix4.translationValues(
+//           dx * menuAnimation.value,
+//           0,
+//           0,
+//         ),
+//       );
+//     }
+//   }
+// }
 
-Route _createRoute() {
-  return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) =>
-        const SettingPage(),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      const begin = Offset(0.0, 1.0);
-      const end = Offset.zero;
-      const curve = Curves.ease;
+// Route _createRoute() {
+//   return PageRouteBuilder(
+//     pageBuilder: (context, animation, secondaryAnimation) =>
+//         const SettingPage(),
+//     transitionsBuilder: (context, animation, secondaryAnimation, child) {
+//       const begin = Offset(0.0, 1.0);
+//       const end = Offset.zero;
+//       const curve = Curves.ease;
 
-      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+//       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
-    },
-  );
-}
+//       return SlideTransition(
+//         position: animation.drive(tween),
+//         child: child,
+//       );
+//     },
+//   );
+// }

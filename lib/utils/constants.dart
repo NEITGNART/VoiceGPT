@@ -6,7 +6,7 @@ String OPEN_API_KEY = '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';
 String BASE_URL = 'https://api.openai.com/v1/';
 
 // Production
-String ANDROID_INTERSTITIAL_ADD_ID = 'ca-app-pub-1309254053883418/5970465605';
+String ANDROID_INTERSTITIAL_ADD_ID = 'ca-app-pub-1309254053883418/9317865436';
 String ANDROID_BANNER_ADD_ID = 'ca-app-pub-1309254053883418/4397282069';
 
 // Production

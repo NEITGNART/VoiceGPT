@@ -4,6 +4,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
+import 'chat/representation/language_controller.dart';
+
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
 
@@ -15,6 +17,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     Get.create(() => stt.SpeechToText());
+    Get.put(LanguageController());
     super.initState();
     Future.delayed(const Duration(milliseconds: 2000), () {
       setState(() {

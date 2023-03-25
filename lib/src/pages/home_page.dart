@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                 animatedTexts: [
                   TyperAnimatedText(
                     textStyle: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 18,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -127,8 +127,8 @@ class _HomePageState extends State<HomePage> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  const Color(0xffadf7f2).withOpacity(0.7),
-                  const Color(0xff15aaff),
+                  const Color(0xffadf7f2).withOpacity(0.5),
+                  const Color(0xff15aaff).withOpacity(1),
                   // Color(0xffFED8F7),
                   // Color(0xffC4DDFE),
                 ],
@@ -227,7 +227,7 @@ class _HomePageState extends State<HomePage> {
               child: Text(
                 text,
                 style: kTitle1Style.copyWith(
-                  color: Colors.white,
+                  color: Colors.blue,
                 ),
               ),
             ),

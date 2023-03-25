@@ -47,30 +47,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCqKUxe4GwvVYBd9hRUQ_jKDv9ZFEzCEdE',
-    appId: '1:86992037195:web:6ac50d7aa6ff8fda6a34ce',
-    messagingSenderId: '86992037195',
-    projectId: 'voicegpt-63042',
-    authDomain: 'voicegpt-63042.firebaseapp.com',
-    storageBucket: 'voicegpt-63042.appspot.com',
-    measurementId: 'G-MPJRZL6YFJ',
+    apiKey: 'AIzaSyDi09G865R_T8KzIJ-XYMirONDUj2TSkdc',
+    appId: '1:974025291344:web:92f69456cf99ad3e380355',
+    messagingSenderId: '974025291344',
+    projectId: 'bard-gpt',
+    authDomain: 'bard-gpt.firebaseapp.com',
+    storageBucket: 'bard-gpt.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCqYKEpq968iPKjojpOQy7dUgEajCBrRtA',
-    appId: '1:86992037195:android:42f1a707c117fb596a34ce',
-    messagingSenderId: '86992037195',
-    projectId: 'voicegpt-63042',
-    storageBucket: 'voicegpt-63042.appspot.com',
+    apiKey: 'AIzaSyAWbB_eW-TqbF2L8idnAlCtGuImo10R5GM',
+    appId: '1:974025291344:android:217aa7e7b32d3886380355',
+    messagingSenderId: '974025291344',
+    projectId: 'bard-gpt',
+    storageBucket: 'bard-gpt.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCgzIVqoD14TQ_Niq_SK-8zNcrBPRYLhak',
-    appId: '1:86992037195:ios:1289a4f760178eab6a34ce',
-    messagingSenderId: '86992037195',
-    projectId: 'voicegpt-63042',
-    storageBucket: 'voicegpt-63042.appspot.com',
-    iosClientId: '86992037195-s778se1sq38avs5d0d7fsr572tibc8bq.apps.googleusercontent.com',
-    iosBundleId: 'com.example.chatgpt',
+    apiKey: 'AIzaSyCxNOIapa_5S0LC3GAYVMxqrvhYimQUdvw',
+    appId: '1:974025291344:ios:449064c5372ff363380355',
+    messagingSenderId: '974025291344',
+    projectId: 'bard-gpt',
+    storageBucket: 'bard-gpt.appspot.com',
+    iosClientId: '974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg.apps.googleusercontent.com',
+    iosBundleId: 'com.bard.chatgpt.hcmus',
   );
 }

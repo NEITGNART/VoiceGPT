@@ -19,8 +19,12 @@ class Languages extends Translations {
           'waiting': 'Tin nhắn đang được tải về...',
           'autoVoice': 'Tự động phát âm',
           'voice': 'Giọng nói ghi âm',
-          'longMessage': 'Tin nhắn quá dài',
-          'changeVoiceSuccess': 'Thay đổi ngôn ngữ ghi âm giọng nói thành công',
+          'longMessage': 'Tin nhắn quá dài!',
+          'changeVoiceSuccess':
+              'Thay đổi ngôn ngữ ghi âm giọng nói thành công!',
+          'voiceLanguage': 'vn',
+          'voice_title': 'Giọng đọc AI',
+          'change_voice_ai_success': 'Thay đổi giọng đọc AI thành công!',
         },
         'en_US': {
           'greeting': 'Hello',
@@ -38,8 +42,11 @@ class Languages extends Translations {
           'waiting': 'Waiting for response...',
           'autoVoice': 'Auto Voice',
           'voice': 'Voice Record',
-          'longMessage': 'Message is too long',
-          'changeVoiceSuccess': 'Change voice record language success',
+          'longMessage': 'Message is too long!',
+          'changeVoiceSuccess': 'Change voice record language success!',
+          'voiceLanguage': 'en',
+          'voice_title': 'AI Voice',
+          'change_voice_ai_success': 'Change AI voice successfully!',
         },
       };
 }
