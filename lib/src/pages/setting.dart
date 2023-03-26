@@ -35,6 +35,12 @@ class _SettingPageState extends State<SettingPage> {
   Widget build(BuildContext context) {
     final sp = Get.find<SharedPreferences>();
     final LanguageController languageController = Get.find();
+    final decoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(
+        color: Colors.blue,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -48,320 +54,339 @@ class _SettingPageState extends State<SettingPage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          gapH20,
-          GestureDetector(
-            onTap: () {
-              Get.to(const MyLanguage());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: [
+              gapH20,
+              GestureDetector(
+                onTap: () {
+                  Get.to(const MyLanguage());
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.language),
-                      gapW20,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Text(
-                            'language'.tr,
-                            style: kTitle2Style.copyWith(
-                              color: Colors.black,
-                            ),
-                          ),
-                          Text(
-                            'currentLanguage'.tr,
-                            style: kCardSubtitleStyle.copyWith(
-                              color: Colors.grey,
-                            ),
-                          ),
+                          const Icon(Icons.language),
+                          gapW20,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'language'.tr,
+                                style: kTitle2Style.copyWith(
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                'currentLanguage'.tr,
+                                style: kCardSubtitleStyle.copyWith(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
                     ],
                   ),
-                  const Icon(Icons.arrow_forward_ios)
-                ],
+                ),
               ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Get.to(const AIVoice());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+              GestureDetector(
+                onTap: () {
+                  Get.to(const AIVoice());
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.record_voice_over_rounded),
-                      gapW20,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Text(
-                            'voice_title'.tr,
-                            style: kTitle2Style.copyWith(
-                              color: Colors.black,
-                            ),
-                          ),
-                          // Text(
-                          //   sp.getString('voiceRecord') ??
-                          //       (Intl.getCurrentLocale() == 'en_US'
-                          //           ? 'English'
-                          //           : 'Tiếng Việt (Vietnamese)'),
-                          //   style: kCardSubtitleStyle.copyWith(
-                          //     color: Colors.grey,
-                          //   ),
+                          const Icon(Icons.record_voice_over_rounded),
+                          gapW20,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'voice_title'.tr,
+                                style: kTitle2Style.copyWith(
+                                  color: Colors.black,
+                                ),
+                              ),
+                              // Text(
+                              //   sp.getString('voiceRecord') ??
+                              //       (Intl.getCurrentLocale() == 'en_US'
+                              //           ? 'English'
+                              //           : 'Tiếng Việt (Vietnamese)'),
+                              //   style: kCardSubtitleStyle.copyWith(
+                              //     color: Colors.grey,
+                              //   ),
 
-                          // observe from controller
-                          Obx(
-                            () => Text(
-                              languageController.getLanguageName(),
-                              style: kCardSubtitleStyle.copyWith(
-                                color: Colors.grey,
+                              // observe from controller
+                              Obx(
+                                () => Text(
+                                  languageController.getLanguageName(),
+                                  style: kCardSubtitleStyle.copyWith(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                decoration: decoration,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.record_voice_over_outlined),
+                        gapW20,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'autoVoice'.tr,
+                              style: kTitle2Style.copyWith(
+                                color: Colors.black,
                               ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  const Icon(Icons.arrow_forward_ios)
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.record_voice_over_outlined),
-                    gapW20,
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'autoVoice'.tr,
-                          style: kTitle2Style.copyWith(
-                            color: Colors.black,
-                          ),
-                        ),
+                          ],
+                        )
                       ],
-                    )
+                    ),
+                    // switch
+                    Switch(
+                      value: sp.getBool('isAutoPlay') ?? false,
+                      onChanged: (value) {
+                        sp.setBool('isAutoPlay', value);
+                        setState(() {});
+                      },
+                    ),
                   ],
                 ),
-                // switch
-                Switch(
-                  value: sp.getBool('isAutoPlay') ?? false,
-                  onChanged: (value) {
-                    sp.setBool('isAutoPlay', value);
-                    setState(() {});
-                  },
+              ),
+              GestureDetector(
+                onTap: () {
+                  Get.to(const MyVoiceLanguge());
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.voice_chat),
+                          gapW20,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'voice'.tr,
+                                style: kTitle2Style.copyWith(
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(
+                                sp.getString('voiceRecord') ??
+                                    (Intl.getCurrentLocale() == 'en_US'
+                                        ? 'English'
+                                        : 'Tiếng Việt (Vietnamese)'),
+                                style: kCardSubtitleStyle.copyWith(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Get.to(const MyVoiceLanguge());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+              ),
+              GestureDetector(
+                onTap: () async {
+                  try {
+                    if (!await launchUrl(
+                      Uri.parse(
+                        'https://www.buymeacoffee.com/zzmanhtien3',
+                      ),
+                      mode: LaunchMode.externalApplication,
+                    )) {}
+                  } catch (e) {
+                    // TODO: implement catch
+                  }
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.voice_chat),
-                      gapW20,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          Text(
-                            'voice'.tr,
-                            style: kTitle2Style.copyWith(
-                              color: Colors.black,
-                            ),
-                          ),
-                          Text(
-                            sp.getString('voiceRecord') ??
-                                (Intl.getCurrentLocale() == 'en_US'
-                                    ? 'English'
-                                    : 'Tiếng Việt (Vietnamese)'),
-                            style: kCardSubtitleStyle.copyWith(
-                              color: Colors.grey,
-                            ),
-                          ),
+                          const Icon(Icons.monetization_on),
+                          gapW20,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'donation'.tr,
+                                style: kTitle2Style.copyWith(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
+                      ),
                     ],
                   ),
-                  const Icon(Icons.arrow_forward_ios)
-                ],
+                ),
               ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () async {
-              try {
-                if (!await launchUrl(
-                  Uri.parse(
-                    'https://www.buymeacoffee.com/zzmanhtien3',
-                  ),
-                  mode: LaunchMode.externalApplication,
-                )) {}
-              } catch (e) {
-                // TODO: implement catch
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
+              GestureDetector(
+                onTap: () {
+                  Get.to(const MyExpansionPanel());
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.monetization_on),
+                      const Icon(Icons.interests_rounded),
                       gapW20,
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'donation'.tr,
-                            style: kTitle2Style.copyWith(
-                              color: Colors.black,
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'note'.tr,
+                              style: kTitle2Style.copyWith(
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                        ],
-                      )
+                            const Icon(Icons.arrow_forward_ios)
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Get.to(const MyExpansionPanel());
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.interests_rounded),
-                  gapW20,
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'note'.tr,
+              GestureDetector(
+                onTap: () {
+                  Get.to(IntroductionScreen(
+                    pages: [
+                      PageViewModel(
+                        title: 'intro_1'.tr,
+                        body: 'intro_1_content'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_1.png",
+                        ),
+                      ),
+                      PageViewModel(
+                        title: 'intro_2'.tr,
+                        body: 'intro_2_content'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_2.png",
+                        ),
+                      ),
+                      PageViewModel(
+                        title: 'intro_3'.tr,
+                        body: 'intro_3_content'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_3.png",
+                        ),
+                      ),
+                      PageViewModel(
+                        title: 'intro_4'.tr,
+                        body: 'intro_4_content'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_4.png",
+                        ),
+                      ),
+                      PageViewModel(
+                        title: 'intro_5'.tr,
+                        body: 'intro_5_content'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_5.png",
+                        ),
+                      ),
+                    ],
+                    onDone: () {
+                      Get.back();
+                    },
+                    showSkipButton: true,
+                    skip: const Text('Skip'),
+                    next: const Icon(Icons.arrow_forward),
+                    done: const Text('Done',
+                        style: TextStyle(fontWeight: FontWeight.w600)),
+                  ));
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.help_outline),
+                      gapW20,
+                      Expanded(
+                        child: Text(
+                          'intro'.tr,
                           style: kTitle2Style.copyWith(
                             color: Colors.black,
                           ),
                         ),
-                        const Icon(Icons.arrow_forward_ios)
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Get.to(IntroductionScreen(
-                pages: [
-                  PageViewModel(
-                    title: 'intro_1'.tr,
-                    body: 'intro_1_content'.tr,
-                    image: Image.asset(
-                      "assets/images/intro_1.png",
-                    ),
-                  ),
-                  PageViewModel(
-                    title: 'intro_2'.tr,
-                    body: 'intro_2_content'.tr,
-                    image: Image.asset(
-                      "assets/images/intro_2.png",
-                    ),
-                  ),
-                  PageViewModel(
-                    title: 'intro_3'.tr,
-                    body: 'intro_3_content'.tr,
-                    image: Image.asset(
-                      "assets/images/intro_3.png",
-                    ),
-                  ),
-                  PageViewModel(
-                    title: 'intro_4'.tr,
-                    body: 'intro_4_content'.tr,
-                    image: Image.asset(
-                      "assets/images/intro_4.png",
-                    ),
-                  ),
-                  PageViewModel(
-                    title: 'intro_5'.tr,
-                    body: 'intro_5_content'.tr,
-                    image: Image.asset(
-                      "assets/images/intro_5.png",
-                    ),
-                  ),
-                ],
-                onDone: () {
-                  Get.back();
-                },
-                showSkipButton: true,
-                skip: const Text('Skip'),
-                next: const Icon(Icons.arrow_forward),
-                done: const Text('Done',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-              ));
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.help_outline),
-                  gapW20,
-                  Expanded(
-                    child: Text(
-                      'intro'.tr,
-                      style: kTitle2Style.copyWith(
-                        color: Colors.black,
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+              Expanded(
+                  child: Center(
+                child: SvgPicture.asset(
+                  'assets/setting.svg',
+                  fit: BoxFit.cover,
+                ),
+              )),
+            ],
           ),
-          Expanded(
-              child: Center(
-            child: SvgPicture.asset(
-              'assets/setting.svg',
-              fit: BoxFit.cover,
-            ),
-          )),
-        ],
+        ),
       ),
     );
   }

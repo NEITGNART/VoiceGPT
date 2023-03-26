@@ -36,7 +36,7 @@ class Languages extends Translations {
           'tutorial_upcomming':
               'Chúng tôi sẽ cập các tính năng sớm nhất có thể, hãy gửi form đánh giá nếu gặp bất cứ lỗi nào để được giải quyết sớm nhất. Cảm ơn bạn đã sử dụng BardGPT',
           'microphone_value':
-              'Hãy đảm bảo bạn đã cấp quyền truy cập vào Microphone. Hiện tại chúng tôi sử dụng ghi âm trong điện thoại của các bạn (mỗi điện thoại sẽ hỗ trợ các ngôn ngữ và độ chính xác khác nhau) để trả lời bạn',
+              'Hãy đảm bảo bạn đã cấp quyền truy cập vào Microphone. Hiện tại chúng tôi sử dụng ghi âm trong điện thoại của các bạn (mỗi điện thoại sẽ hỗ trợ các ngôn ngữ và độ chính xác khác nhau)',
           'chat': 'Nhắn tin',
           'chat_value':
               'Bạn có thể nhắn tin với BardGPT bằng cách gõ hoặc dùng giọng nói và nhắn với bất kỳ người nào khác',
@@ -66,7 +66,7 @@ class Languages extends Translations {
           'sound_title': 'Giọng đọc AI',
           'common_error': 'Một lỗi phổ biến',
           'common_error_content':
-              '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau \n\n Hãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
+              '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau(Nếu giọng nói không hoạt động xin tính năng giọng nói tự động)\n\nHãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
         },
         'en_US': {
           'greeting': 'Hello',
@@ -130,10 +130,8 @@ class Languages extends Translations {
               'Currently unable to play sound, we will fix it as soon as possible. Please try again later',
           'common_error': 'Common Error',
           'common_error_content':
-              '''-System is not available\n +Please try to open the app again\n-Voice AI is not available\n +Currently our system is upgrading, so this issue will be fixed later \n\n Please send the feedback form so we can fix it as soon as possible''',
-          // '''Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\nGiọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau \n\n Hãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
-          //               'common_error': 'Một lỗi phổ biến',
-          // 'common_error_content': '''Hệ thống không khả dụng\n Hãy thử lại mở lại ứng dụng \n Giọng đọc không khả dụng \n Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau \n ''',
+              '''-System is not available\n +Please try to open the app again\n-Voice AI is not available\n +Currently our system is upgrading, so this issue will be fixed later(Please, turn off the automation voice, and try it on later)\n\nPlease send the feedback form so we can fix it as soon as possible''',
+          // (Nếu giọng nói không hoạt động xin tính năng giọng nói tự động)
         },
       };
 }
