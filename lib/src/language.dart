@@ -43,6 +43,24 @@ class Languages extends Translations {
           'thanks_title': 'Lời cảm ơn',
           'thanks':
               'Cảm ơn bạn đã sử dụng BardGPT. Với mong muốn đem lại những trải nghiệm tốt nhất cho bạn, chúng tôi rất mong nhận được những đánh giá của bạn để cải thiện ứng dụng. Hiện tại app đang duy trì bằng quảng cáo, vậy nên hy vọng những trải này không làm phiền bạn quá nhiều.',
+          'intro_1': 'Trò chuyện với trí tuệ nhân tạo',
+          'intro_1_content':
+              'Hãy trò chuyện với trí tuệ nhân tạo và nhận câu trả lời cho các câu hỏi của bạn. Với mọi ngoại ngôn ngữ',
+          'intro_2': 'Giọng nói trí tuệ nhân tạo',
+          'intro_2_content':
+              'Hỗ trợ đầu vào giọng nói và đầu ra giọng nói. Bạn có thể trò chuyện với trí tuệ nhân tạo bằng giọng nói lên tới 10 ngôn ngữ',
+          'intro_3': 'Giọng nói tự động',
+          'intro_3_content': 'Giọng nói tự động sẽ đọc tin nhắn cho bạn.',
+          'intro_4': 'Quảng cáo',
+          'intro_4_content':
+              'Quảng cáo sẽ giúp chúng tôi duy trì ứng dụng. Chúng tôi hy vọng bạn hiểu.',
+          'intro_5': 'Ngôn ngữ',
+          'intro_5_content':
+              'Hỗ trợ tiếng Anh và tiếng Việt. Chúng tôi sẽ thêm nhiều ngôn ngữ khác trong tương lai.',
+          'skip': 'Bỏ qua',
+          'done': 'Hoàn thành',
+          'intro': 'Giới thiệu',
+          'note': 'Lưu ý',
         },
         'en_US': {
           'greeting': 'Hello',
@@ -83,6 +101,24 @@ class Languages extends Translations {
           'thanks_title': 'Acknowledgement',
           'thanks':
               'Thank you for using BardGPT. With the desire to bring you the best experience, we hope to receive your feedback to improve the app. Currently, the app is maintained by advertising, so we hope that these experiences do not bother you too much.',
+          'intro_1': 'Chat with AI',
+          'intro_1_content':
+              "Let's chat with AI and get answers to your questions with any languages",
+          'intro_2': 'Voice AI',
+          'intro_2_content':
+              "Support voice input and voice output. You can chat with AI by voice.",
+          'intro_3': 'Auto Voice',
+          'intro_3_content': "Auto voice will read the message for you. ",
+          'intro_4': 'Ads',
+          'intro_4_content':
+              "Ads will help us maintain the app. We hope you understand.",
+          'intro_5': 'Language',
+          'intro_5_content':
+              "Support English and Vietnamese. We will add more languages in the future.",
+          'skip': 'Skip',
+          'done': 'Done',
+          'intro': 'Introduction ',
+          'note': 'Common Issues',
         },
       };
 }

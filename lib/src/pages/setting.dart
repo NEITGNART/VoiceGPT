@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:url_launcher/url_launcher.dart';
@@ -263,11 +264,81 @@ class _SettingPageState extends State<SettingPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.help_outline),
+                  const Icon(Icons.interests_rounded),
                   gapW20,
                   Expanded(
                     child: Text(
                       'tutorial'.tr,
+                      style: kTitle2Style.copyWith(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Get.to(IntroductionScreen(
+                pages: [
+                  PageViewModel(
+                    title: 'intro_1'.tr,
+                    body: 'intro_1_content'.tr,
+                    image: Image.asset(
+                      "assets/images/intro_1.png",
+                    ),
+                  ),
+                  PageViewModel(
+                    title: 'intro_2'.tr,
+                    body: 'intro_2_content'.tr,
+                    image: Image.asset(
+                      "assets/images/intro_2.png",
+                    ),
+                  ),
+                  PageViewModel(
+                    title: 'intro_3'.tr,
+                    body: 'intro_3_content'.tr,
+                    image: Image.asset(
+                      "assets/images/intro_3.png",
+                    ),
+                  ),
+                  PageViewModel(
+                    title: 'intro_4'.tr,
+                    body: 'intro_4_content'.tr,
+                    image: Image.asset(
+                      "assets/images/intro_4.png",
+                    ),
+                  ),
+                  PageViewModel(
+                    title: 'intro_5'.tr,
+                    body: 'intro_5_content'.tr,
+                    image: Image.asset(
+                      "assets/images/intro_5.png",
+                    ),
+                  ),
+                ],
+                onDone: () {
+                  Get.back();
+                },
+                showSkipButton: true,
+                skip: const Text('Skip'),
+                next: const Icon(Icons.arrow_forward),
+                done: const Text('Done',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+              ));
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Icon(Icons.help_outline),
+                  gapW20,
+                  Expanded(
+                    child: Text(
+                      'intro'.tr,
                       style: kTitle2Style.copyWith(
                         color: Colors.black,
                       ),
