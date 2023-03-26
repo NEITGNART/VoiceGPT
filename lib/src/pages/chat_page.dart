@@ -156,22 +156,13 @@ class _ChatPageState extends State<ChatPage> {
       required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Row(
-              mainAxisAlignment:
-                  chat == 0 ? MainAxisAlignment.end : MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
+      child: chat == 0
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                chat == 1
-                    ? const CircleAvatar(
-                        radius: 15,
-                        backgroundImage:
-                            AssetImage("assets/images/chat-bot.png"),
-                      )
-                    : Container(),
+                if (message.length > 10) ...{const Spacer()},
                 Flexible(
+                  flex: 3,
                   child: Container(
                     margin: const EdgeInsets.only(
                       left: 10,
@@ -194,42 +185,79 @@ class _ChatPageState extends State<ChatPage> {
                         //     bottomRight: Radius.circular(20),
                         //   ),
                         ),
-                    child: chat == 0
-                        ? SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.6,
-                            child: ChatWidget(isMe: true, text: message))
-                        : SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.7,
-                            child: ChatWidget(isMe: false, text: message)),
+                    child: Text(message,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        )),
                   ),
                 ),
               ],
-            ),
-          ),
-          if (chat == 1 && message.isNotEmpty && !_isListening) ...{
-            GestureDetector(
-              onTap: () async {
-                // caused this is asynchronous to play sound, sometimes it doesn't play sound
-                await playSound(message, id, index);
-              },
-              child: CircleAvatar(
-                radius: 20,
-                child: soundPlayingMap[index] == false
-                    ? const Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                      )
-                    : const Icon(
-                        Icons.pause,
-                        color: Colors.white,
-                      ),
-              ),
             )
-          } else ...{
-            Container()
-          },
-        ],
-      ),
+          : Row(
+              children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const CircleAvatar(
+                        radius: 15,
+                        backgroundImage:
+                            AssetImage("assets/images/chat-bot.png"),
+                      ),
+                      Flexible(
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 10,
+                          ),
+                          decoration: const BoxDecoration(
+                              color: Color(0xFFEBF5FF),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))
+                              //  : const BorderRadius.only(
+                              //     topLeft: Radius.circular(20),
+                              //     topRight: Radius.circular(20),
+                              //     bottomRight: Radius.circular(20),
+                              //   ),
+                              ),
+                          child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              child: ChatWidget(isMe: false, text: message)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (message.isNotEmpty && !_isListening) ...{
+                  GestureDetector(
+                    onTap: () async {
+                      // caused this is asynchronous to play sound, sometimes it doesn't play sound
+                      await playSound(message, id, index);
+                    },
+                    child: CircleAvatar(
+                      radius: 20,
+                      child: soundPlayingMap[index] == false
+                          ? const Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                            )
+                          : const Icon(
+                              Icons.pause,
+                              color: Colors.white,
+                            ),
+                    ),
+                  )
+                } else ...{
+                  const SizedBox()
+                },
+              ],
+            ),
     );
   }
 

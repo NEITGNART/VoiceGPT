@@ -16,64 +16,52 @@ class ChatWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTextStyle(
-      style: TextStyle(
-        color: isMe == true ? Colors.white : Colors.black,
+      style: const TextStyle(
+        color: Colors.black,
         fontSize: 16,
       ),
       child: Row(
-        // mainAxisAlignment: (text == 'Waiting for response...' ||
-        //         text == 'Tin nhắn đang được tải về...' ||
-        //         isMe)
-        //     ? MainAxisAlignment.start
-        //     : MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Expanded(
             child: SizedBox(
-              child: isMe
-                  ? Text(
-                      text.replaceFirst('\n\n', ''),
+              child: text.isNotEmpty
+                  ? AnimatedTextKit(
+                      animatedTexts: [
+                        TyperAnimatedText(
+                          text.replaceFirst('\n\n', ''),
+                        ),
+                      ],
+                      repeatForever: false,
+                      totalRepeatCount: 1,
                     )
-                  : text.isNotEmpty
-                      ? AnimatedTextKit(
-                          animatedTexts: [
-                            TyperAnimatedText(
-                              text.replaceFirst('\n\n', ''),
-                            ),
-                          ],
-                          repeatForever: false,
-                          totalRepeatCount: 1,
-                        )
-                      : Text('waiting'.tr),
+                  : Text('waiting'.tr),
             ),
           ),
-          // clipboard
-          if (!isMe) ...{
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  child: const Icon(Icons.copy),
-                  onTap: () {
-                    // FlutterClipboard
-                    FlutterClipboard.copy(text).then((value) => {
-                          Get.snackbar(
-                            'copied'.tr,
-                            text,
-                            snackPosition: SnackPosition.BOTTOM,
-                            backgroundColor: Colors.white,
-                            colorText: Colors.black,
-                            margin: const EdgeInsets.all(10),
-                            borderRadius: 10,
-                            duration: const Duration(seconds: 2),
-                          )
-                        });
-                  },
-                )
-              ],
-            )
-          }
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                child: const Icon(Icons.copy),
+                onTap: () {
+                  // FlutterClipboard
+                  FlutterClipboard.copy(text).then((value) => {
+                        Get.snackbar(
+                          'copied'.tr,
+                          text,
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.white,
+                          colorText: Colors.black,
+                          margin: const EdgeInsets.all(10),
+                          borderRadius: 10,
+                          duration: const Duration(seconds: 2),
+                        )
+                      });
+                },
+              )
+            ],
+          )
         ],
       ),
     );
