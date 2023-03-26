@@ -114,15 +114,15 @@ import '../models/custom_chat_response.dart';
 //   return modelsList;
 // }
 
-// final dio = Dio(BaseOptions(
-//   baseUrl: 'https://chatgptserver101.herokuapp.com',
-//   contentType: 'application/json',
-// ));
-
 final dio = Dio(BaseOptions(
-  baseUrl: 'https://b1a8-2a09-bac5-d46e-e6-00-17-243.ap.ngrok.io',
+  baseUrl: 'https://chatgptserver101.herokuapp.com',
   contentType: 'application/json',
 ));
+
+// final dio = Dio(BaseOptions(
+//   baseUrl: 'https://b1a8-2a09-bac5-d46e-e6-00-17-243.ap.ngrok.io',
+//   contentType: 'application/json',
+// ));
 
 Future<Uint8List> synthesizeSpeech(
   String text,

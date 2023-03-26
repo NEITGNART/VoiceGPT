@@ -3,7 +3,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
@@ -18,6 +17,7 @@ import '../../common/constants.dart';
 import '../../models/chat.dart';
 import '../../network/api_services.dart';
 import '../chat/presentation/audio_waves.dart';
+import 'chat/representation/my_chat_message.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -25,11 +25,6 @@ class ChatPage extends StatefulWidget {
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
-
-// Future<bool> requestStoragePermission() async {
-//   final status = await Permission.storage.request();
-//   return status == PermissionStatus.granted;
-// }
 
 class _ChatPageState extends State<ChatPage> {
   String messagePrompt = '';
@@ -137,14 +132,6 @@ class _ChatPageState extends State<ChatPage> {
       child: Container(
         padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
         width: double.infinity,
-        // decoration: const BoxDecoration(
-        //   borderRadius: BorderRadius.only(
-        //       topLeft: Radius.circular(45), topRight: Radius.circular(45)),
-        //   image: DecorationImage(
-        //     image: AssetImage("assets/images/chat-background.jpg"),
-        //     fit: BoxFit.cover,
-        //   ),
-        // ),
         child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
@@ -208,11 +195,9 @@ class _ChatPageState extends State<ChatPage> {
                         //   ),
                         ),
                     child: chat == 0
-                        ? message.length < 5
-                            ? ChatWidget(text: message, isMe: true)
-                            : SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                child: ChatWidget(isMe: true, text: message))
+                        ? SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: ChatWidget(isMe: true, text: message))
                         : SizedBox(
                             width: MediaQuery.of(context).size.width * 0.7,
                             child: ChatWidget(isMe: false, text: message)),
@@ -512,17 +497,7 @@ class _ChatPageState extends State<ChatPage> {
                                     parentMessageId,
                                     n - 1);
                               } catch (e) {
-                                chatList.add(Chat(
-                                    msg:
-                                        "Sorry, service is temporary unavailable",
-                                    chat: 1,
-                                    id: parentMessageId));
-                                int m = chatList.length;
-                                chatList[m - 1] = Chat(
-                                    msg:
-                                        "Sorry, the voice service is temporary unavailable",
-                                    chat: 1,
-                                    id: parentMessageId);
+                                rethrow;
                               }
                             }
                           } catch (e) {
@@ -531,7 +506,6 @@ class _ChatPageState extends State<ChatPage> {
                                 chat: 1,
                                 id: parentMessageId);
                           }
-
                           setState(() {
                             messageController.clear();
                             _scrollController.animateTo(
@@ -561,211 +535,15 @@ class _ChatPageState extends State<ChatPage> {
                 )
             ],
           ),
-          // Column(
-          //   children: [
-          //     AvatarGlow(
-          //         animate: _isListening,
-          //         glowColor: Colors.green,
-          //         endRadius: 60.0,
-          //         duration: const Duration(milliseconds: 2000),
-          //         repeatPauseDuration: const Duration(milliseconds: 500),
-          //         repeat: true,
-          //         child: InkWell(
-          //           onTap: () {
-          //             _listen();
-          //           },
-          //           child: Container(
-          //             width: 80,
-          //             height: MediaQuery.of(context).size.height,
-          //             decoration: BoxDecoration(
-          //               shape: BoxShape.circle,
-          //               color: _isListening
-          //                   ? Colors.green
-          //                   : Theme.of(context).primaryColor,
-          //             ),
-          //             child: Icon(_isListening ? Icons.mic : Icons.mic_none,
-          //                 size: 50, color: Colors.white),
-          //           ),
-          //         )
-          //         // child: FloatingActionButton(
-          //         //   // increase the size of the button
-          //         //   backgroundColor:
-          //         //       _isListening ? Colors.green : Theme.of(context).primaryColor,
-          //         //   onPressed: _listen,
-          //         //   child: Icon(_isListening ? Icons.mic : Icons.mic_none, size: 80),
-          //         // ),
-          //         ),
-          //     Text(
-          //       _isListening ? 'Listening' : 'Press to Speak',
-          //       style: const TextStyle(
-          //         color: Colors.white,
-          //         fontSize: 12,
-          //       ),
-          //     ),
-          //     const SizedBox(
-          //       height: 20,
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
   }
 
-  // GestureDetector MySetting() {
-  //   return GestureDetector(
-  //     onTap: () {
-  //       Navigator.push(context, _createRoute());
-
-  //       // showModalBottomSheet<void>(
-  //       //   context: context,
-  //       //   backgroundColor: Colors.transparent,
-  //       //   builder: (BuildContext context) {
-  //       //     return StatefulBuilder(
-  //       //         builder: (BuildContext context, StateSetter state) {
-  //       //       return Container(
-  //       //         height: 400,
-  //       //         decoration: const BoxDecoration(
-  //       //             color: Colors.white,
-  //       //             borderRadius: BorderRadius.only(
-  //       //               topLeft: Radius.circular(20),
-  //       //               topRight: Radius.circular(20),
-  //       //             )),
-  //       //         child: Column(
-  //       //           mainAxisAlignment: MainAxisAlignment.start,
-  //       //           mainAxisSize: MainAxisSize.min,
-  //       //           children: <Widget>[
-  //       //             const Padding(
-  //       //               padding: EdgeInsets.symmetric(vertical: 15.0),
-  //       //               child: Text(
-  //       //                 'Settings',
-  //       //                 style: TextStyle(
-  //       //                   color: Color(0xFFF75555),
-  //       //                   fontWeight: FontWeight.bold,
-  //       //                 ),
-  //       //               ),
-  //       //             ),
-  //       //             Divider(
-  //       //               color: Colors.grey.shade700,
-  //       //             ),
-  //       //             Padding(
-  //       //               padding: const EdgeInsets.fromLTRB(20, 2, 20, 2),
-  //       //               child: DropdownButtonFormField(
-  //       //                 items: models,
-  //       //                 borderRadius: const BorderRadius.only(),
-  //       //                 focusColor: Colors.amber,
-  //       //                 onChanged: (String? s) {},
-  //       //                 decoration:
-  //       //                     const InputDecoration(hintText: "Select Model"),
-  //       //               ),
-  //       //             ),
-  //       //             const Padding(
-  //       //               padding: EdgeInsets.fromLTRB(20, 20, 20, 2),
-  //       //               child: Align(
-  //       //                   alignment: Alignment.topLeft, child: Text("Token")),
-  //       //             ),
-  //       //             Slider(
-  //       //               min: 0,
-  //       //               max: 1000,
-  //       //               activeColor: const Color(0xFFE58500),
-  //       //               inactiveColor: const Color.fromARGB(255, 230, 173, 92),
-  //       //               value: tokenValue.toDouble(),
-  //       //               onChanged: (value) {
-  //       //                 state(() {
-  //       //                   tokenValue = value.round();
-  //       //                 });
-  //       //               },
-  //       //             ),
-  //       //             Padding(
-  //       //               padding: const EdgeInsets.symmetric(vertical: 10.0),
-  //       //               child: Row(
-  //       //                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //       //                 children: [
-  //       //                   InkWell(
-  //       //                     onTap: () {
-  //       //                       Navigator.of(context).pop(false);
-  //       //                     },
-  //       //                     child: Container(
-  //       //                       width: MediaQuery.of(context).size.width / 2.2,
-  //       //                       decoration: BoxDecoration(
-  //       //                         color: Colors.grey.shade200,
-  //       //                         borderRadius: BorderRadius.circular(40),
-  //       //                       ),
-  //       //                       padding: const EdgeInsets.symmetric(
-  //       //                           vertical: 15, horizontal: 20),
-  //       //                       child: const Center(
-  //       //                         child: Text(
-  //       //                           'Cancel',
-  //       //                           style: TextStyle(
-  //       //                             color: Colors.black,
-  //       //                             fontWeight: FontWeight.bold,
-  //       //                           ),
-  //       //                         ),
-  //       //                       ),
-  //       //                     ),
-  //       //                   ),
-  //       //                   InkWell(
-  //       //                     onTap: () {
-  //       //                       saveData(tokenValue);
-  //       //                       Navigator.of(context).pop(false);
-  //       //                     },
-  //       //                     child: Container(
-  //       //                       width: MediaQuery.of(context).size.width / 2.2,
-  //       //                       decoration: BoxDecoration(
-  //       //                         color: const Color(0xFFE58500),
-  //       //                         borderRadius: BorderRadius.circular(40),
-  //       //                       ),
-  //       //                       padding: const EdgeInsets.symmetric(
-  //       //                           vertical: 15, horizontal: 20),
-  //       //                       child: const Center(
-  //       //                         child: Text(
-  //       //                           'Save',
-  //       //                           style: TextStyle(
-  //       //                             color: Colors.black,
-  //       //                             fontWeight: FontWeight.bold,
-  //       //                           ),
-  //       //                         ),
-  //       //                       ),
-  //       //                     ),
-  //       //                   )
-  //       //                 ],
-  //       //               ),
-  //       //             ),
-  //       //           ],
-  //       //         ),
-  //       //       );
-  //       //     });
-  //       //   },
-  //       // );
-  //     },
-  //     child: const Icon(
-  //       Icons.more_vert_rounded,
-  //       size: 25,
-  //       color: Colors.white,
-  //     ),
-  //   );
-  // }
-
   void _listen() async {
     if (!_isListening) {
-      bool available = await _speech.initialize(
-          // onStatus: (val) => print('onStatus: $val'),
-          // onError: (val) => print('onError: $val'),
-          );
+      bool available = await _speech.initialize();
       if (available) {
-        // var locales = await _speech.locales();
-        // put locales to Setting page
-
-        // Get.to(() => SettingPage(locales: locales));
-
-        // // print('locales': locales);
-        // logger.i('locales: $locales');
-        // // locale vietnamese
-
-        // for (var element in locales) {
-        //   // logg element
-        //   logger.i('element: ${element.name}');
-        // }
         setState(() => _isListening = true);
         _speech.listen(
           localeId: _currentLocaleId,
@@ -787,43 +565,6 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-class ChatWidget extends StatelessWidget {
-  final bool isMe;
-  final String text;
-
-  const ChatWidget({
-    Key? key,
-    required this.isMe,
-    required this.text,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTextStyle(
-      style: TextStyle(
-        color: isMe == true ? Colors.white : Colors.black,
-        fontSize: 16,
-      ),
-      child: SizedBox(
-        child: isMe
-            ? Text(
-                text.replaceFirst('\n\n', ''),
-              )
-            : text.isNotEmpty
-                ? AnimatedTextKit(
-                    animatedTexts: [
-                      TyperAnimatedText(
-                        text.replaceFirst('\n\n', ''),
-                      ),
-                    ],
-                    repeatForever: false,
-                    totalRepeatCount: 1,
-                  )
-                : Text('waiting'.tr),
-      ),
-    );
-  }
-}
 
 // class FlowMenu extends StatefulWidget {
 //   const FlowMenu({super.key});

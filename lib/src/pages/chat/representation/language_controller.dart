@@ -31,6 +31,8 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final Map<String, String> flags = {
+  'en-US-AriaNeural': 'assets/images/english.png',
+  'vi-VN-HoaiMyNeural': 'assets/images/vietnam.png',
   'ja-JP-MayuNeural': 'assets/images/japan.png',
   'zh-HK-HiuGaaiNeural': 'assets/images/china.png',
   'fr-FR-DeniseNeural': 'assets/images/france.png',
@@ -41,6 +43,7 @@ final Map<String, String> flags = {
 };
 
 final Map<String, String> engLanguage = {
+  'English': 'en-US-AriaNeural',
   'Japanese': 'ja-JP-MayuNeural',
   'Chinese': 'zh-HK-HiuGaaiNeural',
   'French': 'fr-FR-DeniseNeural',
@@ -48,9 +51,11 @@ final Map<String, String> engLanguage = {
   'Spanish': 'es-ES-ElviraNeural',
   'German': 'de-DE-AmalaNeural',
   'Russian': 'ru-RU-DmitryNeural',
+  'Vietnamese': 'vi-VN-HoaiMyNeural',
 };
 
 final Map<String, String> vnLanguage = {
+  'Tiếng Anh': 'en-US-AriaNeural',
   'Tiếng Nhật': 'ja-JP-MayuNeural',
   'Tiếng Trung': 'zh-HK-HiuGaaiNeural',
   'Tiếng Pháp': 'fr-FR-DeniseNeural',
@@ -58,6 +63,7 @@ final Map<String, String> vnLanguage = {
   'Tiếng Tây Ban Nha': 'es-ES-ElviraNeural',
   'Tiếng Đức': 'de-DE-AmalaNeural',
   'Tiếng Nga': 'ru-RU-DmitryNeural',
+  'Tiếng Việt': 'vi-VN-HoaiMyNeural'
 };
 
 class LanguageController extends GetxController {

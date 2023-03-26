@@ -171,12 +171,12 @@ class _HomePageState extends State<HomePage> {
                   SvgPicture.asset('assets/settings.svg', height: 40),
                 ),
                 buttonWidget(
-                  'contact'.tr,
+                  'suggest'.tr,
                   () {
                     _showInterstitialAd();
                     _launchUrl(
                       Uri.parse(
-                        'https://www.upwork.com/freelancers/~0175e0a252dea273ca',
+                        'https://forms.gle/LXmyxawkPM6az8Dq5',
                       ),
                     );
                   },

@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'chat/representation/my_language.dart';
 import 'chat/representation/my_voice_language.dart';
@@ -214,20 +215,77 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
             ),
-            // change language
-            // ElevatedButton(
-            //   onPressed: () {},
-            //   child: const Text('Change Language'),
-            // ),
-
-            // InkWell(
-            //   onTap: () {
-            //     Get.updateLocale(const Locale('vi', 'VN'));
-            //   },
-            //   child: Row(children: [
-            //     Text('language'.tr),
-            //   ]),
-            // ),
+            GestureDetector(
+              onTap: () async {
+                try {
+                  if (!await launchUrl(
+                    Uri.parse(
+                      'https://www.buymeacoffee.com/zzmanhtien3',
+                    ),
+                    mode: LaunchMode.externalApplication,
+                  )) {}
+                } catch (e) {
+                  // TODO: implement catch
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.monetization_on),
+                        gapW20,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'donation'.tr,
+                              style: kTitle2Style.copyWith(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Get.to(const MyExpansionPanel());
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.help_outline),
+                        gapW20,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'tutorial'.tr,
+                              style: kTitle2Style.copyWith(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
                 child: Center(
               child: SvgPicture.asset(
@@ -240,4 +298,74 @@ class _SettingPageState extends State<SettingPage> {
       ),
     );
   }
+}
+
+class MyExpansionPanel extends StatefulWidget {
+  const MyExpansionPanel({super.key});
+
+  @override
+  _MyExpansionPanelState createState() => _MyExpansionPanelState();
+}
+
+class _MyExpansionPanelState extends State<MyExpansionPanel> {
+  final List<Item> _items = [
+    Item(headerValue: 'network'.tr, expandedValue: 'network_value'.tr),
+    Item(headerValue: 'microphone'.tr, expandedValue: 'microphone_value'.tr),
+    Item(headerValue: 'chat'.tr, expandedValue: 'chat_value'.tr),
+  ];
+  int _currentIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Text('tutorial'.tr),
+          ],
+        ),
+        shadowColor: Colors.transparent,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              child: ExpansionPanelList(
+                expansionCallback: (int index, bool isExpanded) {
+                  setState(() {
+                    _currentIndex = isExpanded ? -1 : index;
+                  });
+                },
+                children: _items.map((Item item) {
+                  return ExpansionPanel(
+                    headerBuilder: (BuildContext context, bool isExpanded) {
+                      return ListTile(
+                        title: Text(item.headerValue),
+                      );
+                    },
+                    body: ListTile(
+                      title: Text(item.expandedValue),
+                    ),
+                    isExpanded: _currentIndex == _items.indexOf(item),
+                  );
+                }).toList(),
+              ),
+            ),
+            SvgPicture.asset(
+              'assets/setting.svg',
+              fit: BoxFit.cover,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Item {
+  String headerValue;
+  String expandedValue;
+
+  Item({required this.headerValue, required this.expandedValue});
 }
