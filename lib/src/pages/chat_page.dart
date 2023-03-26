@@ -296,15 +296,19 @@ class _ChatPageState extends State<ChatPage> {
               // pause
             );
           } else {
-            final audioBytes = await synthesizeSpeech(message);
-            await file.writeAsBytes(audioBytes);
-            await assetsAudioPlayer.open(
-              Audio.file(path),
-            );
+            try {
+              final audioBytes = await synthesizeSpeech(message);
+              await file.writeAsBytes(audioBytes);
+              await assetsAudioPlayer.open(
+                Audio.file(path),
+              );
+            } catch (e) {
+              rethrow;
+            }
           }
         });
       } catch (e) {
-        //
+        Get.snackbar('sound_title'.tr, 'sound_error'.tr);
       }
       // } else {
       //   if (isDebounce == true) {

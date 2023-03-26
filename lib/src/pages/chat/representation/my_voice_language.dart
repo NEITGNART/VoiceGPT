@@ -144,13 +144,6 @@ class LocaleSearchDelegate extends SearchDelegate<LocaleName> {
           title: Text(locale.name),
           subtitle: Text(locale.localeId),
           onTap: () {
-            final snackBar = SnackBar(
-              content: Text('changeVoiceSuccess'.tr),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            // not see result
             close(context, locale);
           },
         );

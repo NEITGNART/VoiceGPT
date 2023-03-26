@@ -61,6 +61,12 @@ class Languages extends Translations {
           'done': 'Hoàn thành',
           'intro': 'Giới thiệu',
           'note': 'Lưu ý',
+          'sound_error':
+              'Hiện tại không thể phát âm, chúng tôi sẽ khắc phục sớm nhất có thể. Vui lòng thử lại sau',
+          'sound_title': 'Giọng đọc AI',
+          'common_error': 'Một lỗi phổ biến',
+          'common_error_content':
+              '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau \n\n Hãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
         },
         'en_US': {
           'greeting': 'Hello',
@@ -119,6 +125,15 @@ class Languages extends Translations {
           'done': 'Done',
           'intro': 'Introduction ',
           'note': 'Common Issues',
+          'sound_title': 'Voice AI',
+          'sound_error':
+              'Currently unable to play sound, we will fix it as soon as possible. Please try again later',
+          'common_error': 'Common Error',
+          'common_error_content':
+              '''-System is not available\n +Please try to open the app again\n-Voice AI is not available\n +Currently our system is upgrading, so this issue will be fixed later \n\n Please send the feedback form so we can fix it as soon as possible''',
+          // '''Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\nGiọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau \n\n Hãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
+          //               'common_error': 'Một lỗi phổ biến',
+          // 'common_error_content': '''Hệ thống không khả dụng\n Hãy thử lại mở lại ứng dụng \n Giọng đọc không khả dụng \n Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau \n ''',
         },
       };
 }

@@ -267,11 +267,17 @@ class _SettingPageState extends State<SettingPage> {
                   const Icon(Icons.interests_rounded),
                   gapW20,
                   Expanded(
-                    child: Text(
-                      'tutorial'.tr,
-                      style: kTitle2Style.copyWith(
-                        color: Colors.black,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'note'.tr,
+                          style: kTitle2Style.copyWith(
+                            color: Colors.black,
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios)
+                      ],
                     ),
                   ),
                 ],
@@ -370,6 +376,9 @@ class MyExpansionPanel extends StatefulWidget {
 
 class _MyExpansionPanelState extends State<MyExpansionPanel> {
   final List<Item> _items = [
+    Item(
+        headerValue: 'common_error'.tr,
+        expandedValue: 'common_error_content'.tr),
     Item(headerValue: 'network'.tr, expandedValue: 'network_value'.tr),
     Item(headerValue: 'microphone'.tr, expandedValue: 'microphone_value'.tr),
     Item(headerValue: 'chat'.tr, expandedValue: 'chat_value'.tr),
