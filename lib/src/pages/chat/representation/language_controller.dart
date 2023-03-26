@@ -125,65 +125,28 @@ class AIVoice extends StatelessWidget {
           ],
         ),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            // get the language from the controller
-            if ('voiceLanguage'.tr == 'vn') ...{
-              Expanded(
-                child: ListView.builder(
-                  // divider
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        ListTile(
-                          // color
-                          leading: Image.asset(
-                            flags[vnLanguage.values.elementAt(index)]!,
-                            width: 30,
-                            height: 30,
-                          ),
-                          title: Text(vnLanguage.keys.elementAt(index)),
-                          onTap: () async {
-                            languageController.changeLanguageVn(
-                                vnLanguage.keys.elementAt(index));
-
-                            await saveLanguageCode(
-                                vnLanguage.values.elementAt(index),
-                                vnLanguage.keys.elementAt(index));
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.green,
-                                duration: const Duration(seconds: 2),
-                                content: Text('change_voice_ai_success'.tr),
-                              ),
-                            );
-                          },
-                        ),
-                        const Divider(
-                          thickness: 1,
-                          color: Colors.blue,
-                        ),
-                      ],
-                    );
-                  },
-                  itemCount: vnLanguage.length,
-                ),
-              ),
-            } else ...{
-              Expanded(
-                child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return ListTile(
+      body: Column(
+        children: [
+          // get the language from the controller
+          if ('voiceLanguage'.tr == 'vn') ...{
+            Expanded(
+              child: ListView.builder(
+                // divider
+                itemBuilder: (context, index) {
+                  return Column(
+                    children: [
+                      ListTile(
+                        // color
                         leading: Image.asset(
                           flags[vnLanguage.values.elementAt(index)]!,
                           width: 30,
                           height: 30,
                         ),
-                        title: Text(engLanguage.keys.elementAt(index)),
+                        title: Text(vnLanguage.keys.elementAt(index)),
                         onTap: () async {
-                          languageController.changeLanguage(
-                              engLanguage.keys.elementAt(index));
+                          languageController.changeLanguageVn(
+                              vnLanguage.keys.elementAt(index));
+
                           await saveLanguageCode(
                               vnLanguage.values.elementAt(index),
                               vnLanguage.keys.elementAt(index));
@@ -195,13 +158,48 @@ class AIVoice extends StatelessWidget {
                             ),
                           );
                         },
-                      );
-                    },
-                    itemCount: engLanguage.length),
+                      ),
+                      const Divider(
+                        thickness: 1,
+                        color: Colors.blue,
+                      ),
+                    ],
+                  );
+                },
+                itemCount: vnLanguage.length,
               ),
-            }
-          ],
-        ),
+            ),
+          } else ...{
+            Expanded(
+              child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Image.asset(
+                        flags[vnLanguage.values.elementAt(index)]!,
+                        width: 30,
+                        height: 30,
+                      ),
+                      title: Text(engLanguage.keys.elementAt(index)),
+                      onTap: () async {
+                        languageController
+                            .changeLanguage(engLanguage.keys.elementAt(index));
+                        await saveLanguageCode(
+                            vnLanguage.values.elementAt(index),
+                            vnLanguage.keys.elementAt(index));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.green,
+                            duration: const Duration(seconds: 2),
+                            content: Text('change_voice_ai_success'.tr),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  itemCount: engLanguage.length),
+            ),
+          }
+        ],
       ),
     );
   }

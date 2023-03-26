@@ -173,7 +173,6 @@ class _HomePageState extends State<HomePage> {
                 buttonWidget(
                   'suggest'.tr,
                   () {
-                    _showInterstitialAd();
                     _launchUrl(
                       Uri.parse(
                         'https://forms.gle/LXmyxawkPM6az8Dq5',

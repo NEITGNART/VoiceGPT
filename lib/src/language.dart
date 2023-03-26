@@ -28,15 +28,21 @@ class Languages extends Translations {
           'suggest': 'Đề xuất tính năng',
           'donation': 'Ủng hộ chúng tôi',
           'tutorial': 'Hướng dẫn sử dụng',
-          'network': 'Mạng',
+          'network': 'Kết nối mạng',
           'network_value':
               'Hãy đảm bảo bạn đang kết nối mạng để sử dụng ứng dụng',
           'microphone': 'Tính năng ghi âm',
+          'new_feature': 'Các tính năng mới',
+          'tutorial_upcomming':
+              'Chúng tôi sẽ cập các tính năng sớm nhất có thể, hãy gửi form đánh giá nếu gặp bất cứ lỗi nào để được giải quyết sớm nhất. Cảm ơn bạn đã sử dụng BardGPT',
           'microphone_value':
               'Hãy đảm bảo bạn đã cấp quyền truy cập vào Microphone. Hiện tại chúng tôi sử dụng ghi âm trong điện thoại của các bạn (mỗi điện thoại sẽ hỗ trợ các ngôn ngữ và độ chính xác khác nhau) để trả lời bạn',
           'chat': 'Nhắn tin',
           'chat_value':
               'Bạn có thể nhắn tin với BardGPT bằng cách gõ hoặc dùng giọng nói và nhắn với bất kỳ người nào khác',
+          'thanks_title': 'Lời cảm ơn',
+          'thanks':
+              'Cảm ơn bạn đã sử dụng BardGPT. Với mong muốn đem lại những trải nghiệm tốt nhất cho bạn, chúng tôi rất mong nhận được những đánh giá của bạn để cải thiện ứng dụng. Hiện tại app đang duy trì bằng quảng cáo, vậy nên hy vọng những trải này không làm phiền bạn quá nhiều.',
         },
         'en_US': {
           'greeting': 'Hello',
@@ -62,15 +68,21 @@ class Languages extends Translations {
           'suggest': 'Request new features',
           'donation': 'Buy me a coffee',
           'tutorial': 'Tutorial',
-          'network': 'Network',
+          'network': 'Network connection',
+          'new_feature': 'New feature',
+          'tutorial_upcomming':
+              'Feel free to send us feedback if you have any issues',
           'network_value':
               'Please make sure you are connected to the network to use the app',
-          'microphone': 'Microphone feature',
+          'microphone': 'Voice record',
           'microphone_value':
               'Please make sure you have granted access to the microphone. Currently, we use the recording function on your phone (each phone will support different languages and accuracy) to respond to you.',
           'chat': 'Chat',
           'chat_value':
-              'You can chat with BardGPT by typing or using voice and chat with anyone else.'
+              'You can chat with BardGPT by typing or using voice and chat with anyone else.',
+          'thanks_title': 'Acknowledgement',
+          'thanks':
+              'Thank you for using BardGPT. With the desire to bring you the best experience, we hope to receive your feedback to improve the app. Currently, the app is maintained by advertising, so we hope that these experiences do not bother you too much.',
         },
       };
 }

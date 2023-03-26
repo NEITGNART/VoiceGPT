@@ -47,100 +47,14 @@ class _SettingPageState extends State<SettingPage> {
           ],
         ),
       ),
-      body: Container(
-        // background
-        child: Column(
-          children: [
-            gapH20,
-            GestureDetector(
-              onTap: () {
-                Get.to(const MyLanguage());
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.language),
-                        gapW20,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'language'.tr,
-                              style: kTitle2Style.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                            Text(
-                              'currentLanguage'.tr,
-                              style: kCardSubtitleStyle.copyWith(
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Get.to(const AIVoice());
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.record_voice_over_rounded),
-                        gapW20,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'voice_title'.tr,
-                              style: kTitle2Style.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                            // Text(
-                            //   sp.getString('voiceRecord') ??
-                            //       (Intl.getCurrentLocale() == 'en_US'
-                            //           ? 'English'
-                            //           : 'Tiếng Việt (Vietnamese)'),
-                            //   style: kCardSubtitleStyle.copyWith(
-                            //     color: Colors.grey,
-                            //   ),
-
-                            // observe from controller
-                            Obx(
-                              () => Text(
-                                languageController.getLanguageName(),
-                                style: kCardSubtitleStyle.copyWith(
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
-                ),
-              ),
-            ),
-            Container(
+      body: Column(
+        children: [
+          gapH20,
+          GestureDetector(
+            onTap: () {
+              Get.to(const MyLanguage());
+            },
+            child: Container(
               padding: const EdgeInsets.all(10),
               decoration: const BoxDecoration(),
               child: Row(
@@ -148,13 +62,185 @@ class _SettingPageState extends State<SettingPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.record_voice_over_outlined),
+                      const Icon(Icons.language),
                       gapW20,
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'autoVoice'.tr,
+                            'language'.tr,
+                            style: kTitle2Style.copyWith(
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            'currentLanguage'.tr,
+                            style: kCardSubtitleStyle.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  const Icon(Icons.arrow_forward_ios)
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Get.to(const AIVoice());
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.record_voice_over_rounded),
+                      gapW20,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'voice_title'.tr,
+                            style: kTitle2Style.copyWith(
+                              color: Colors.black,
+                            ),
+                          ),
+                          // Text(
+                          //   sp.getString('voiceRecord') ??
+                          //       (Intl.getCurrentLocale() == 'en_US'
+                          //           ? 'English'
+                          //           : 'Tiếng Việt (Vietnamese)'),
+                          //   style: kCardSubtitleStyle.copyWith(
+                          //     color: Colors.grey,
+                          //   ),
+
+                          // observe from controller
+                          Obx(
+                            () => Text(
+                              languageController.getLanguageName(),
+                              style: kCardSubtitleStyle.copyWith(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  const Icon(Icons.arrow_forward_ios)
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.record_voice_over_outlined),
+                    gapW20,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'autoVoice'.tr,
+                          style: kTitle2Style.copyWith(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                // switch
+                Switch(
+                  value: sp.getBool('isAutoPlay') ?? false,
+                  onChanged: (value) {
+                    sp.setBool('isAutoPlay', value);
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Get.to(const MyVoiceLanguge());
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.voice_chat),
+                      gapW20,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'voice'.tr,
+                            style: kTitle2Style.copyWith(
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            sp.getString('voiceRecord') ??
+                                (Intl.getCurrentLocale() == 'en_US'
+                                    ? 'English'
+                                    : 'Tiếng Việt (Vietnamese)'),
+                            style: kCardSubtitleStyle.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                  const Icon(Icons.arrow_forward_ios)
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () async {
+              try {
+                if (!await launchUrl(
+                  Uri.parse(
+                    'https://www.buymeacoffee.com/zzmanhtien3',
+                  ),
+                  mode: LaunchMode.externalApplication,
+                )) {}
+              } catch (e) {
+                // TODO: implement catch
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.monetization_on),
+                      gapW20,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'donation'.tr,
                             style: kTitle2Style.copyWith(
                               color: Colors.black,
                             ),
@@ -163,138 +249,42 @@ class _SettingPageState extends State<SettingPage> {
                       )
                     ],
                   ),
-                  // switch
-                  Switch(
-                    value: sp.getBool('isAutoPlay') ?? false,
-                    onChanged: (value) {
-                      sp.setBool('isAutoPlay', value);
-                      setState(() {});
-                    },
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Get.to(const MyExpansionPanel());
+            },
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: const BoxDecoration(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Icon(Icons.help_outline),
+                  gapW20,
+                  Expanded(
+                    child: Text(
+                      'tutorial'.tr,
+                      style: kTitle2Style.copyWith(
+                        color: Colors.black,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                Get.to(const MyVoiceLanguge());
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.voice_chat),
-                        gapW20,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'voice'.tr,
-                              style: kTitle2Style.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                            Text(
-                              sp.getString('voiceRecord') ??
-                                  (Intl.getCurrentLocale() == 'en_US'
-                                      ? 'English'
-                                      : 'Tiếng Việt (Vietnamese)'),
-                              style: kCardSubtitleStyle.copyWith(
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
-                ),
-              ),
+          ),
+          Expanded(
+              child: Center(
+            child: SvgPicture.asset(
+              'assets/setting.svg',
+              fit: BoxFit.cover,
             ),
-            GestureDetector(
-              onTap: () async {
-                try {
-                  if (!await launchUrl(
-                    Uri.parse(
-                      'https://www.buymeacoffee.com/zzmanhtien3',
-                    ),
-                    mode: LaunchMode.externalApplication,
-                  )) {}
-                } catch (e) {
-                  // TODO: implement catch
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.monetization_on),
-                        gapW20,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'donation'.tr,
-                              style: kTitle2Style.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Get.to(const MyExpansionPanel());
-              },
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.help_outline),
-                        gapW20,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'tutorial'.tr,
-                              style: kTitle2Style.copyWith(
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-                child: Center(
-              child: SvgPicture.asset(
-                'assets/setting.svg',
-                fit: BoxFit.cover,
-              ),
-            )),
-          ],
-        ),
+          )),
+        ],
       ),
     );
   }
@@ -312,6 +302,8 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
     Item(headerValue: 'network'.tr, expandedValue: 'network_value'.tr),
     Item(headerValue: 'microphone'.tr, expandedValue: 'microphone_value'.tr),
     Item(headerValue: 'chat'.tr, expandedValue: 'chat_value'.tr),
+    Item(headerValue: 'new_feature'.tr, expandedValue: 'tutorial_upcomming'.tr),
+    Item(headerValue: 'thanks_title'.tr, expandedValue: 'thanks'.tr),
   ];
   int _currentIndex = -1;
 
@@ -341,7 +333,7 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
                   return ExpansionPanel(
                     headerBuilder: (BuildContext context, bool isExpanded) {
                       return ListTile(
-                        title: Text(item.headerValue),
+                        title: Text(item.headerValue, style: kTitle1Style),
                       );
                     },
                     body: ListTile(
