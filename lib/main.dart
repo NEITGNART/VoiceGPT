@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:chatgpt/src/language.dart';
+import 'package:chatgpt/src/pages/chat/my_reuse_text.dart';
 import 'package:chatgpt/src/pages/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -43,36 +45,43 @@ void main() async {
     }
     message.subscribeToTopic('all_users');
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      Get.snackbar(
-        message.notification?.title ?? '',
-        message.notification?.body ?? '',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.white,
-        colorText: Colors.black,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 10,
-        duration: const Duration(seconds: 10),
-        onTap: (snack) {
-          launchUrlAsync(
-            Uri.parse(
-              '${message.data['url']}}',
-            ),
-          );
-        },
-      );
+      if (message.data['url'] != null) {
+        Get.snackbar(
+          message.notification?.title ?? '',
+          message.notification?.body ?? '',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.white,
+          colorText: Colors.black,
+          margin: const EdgeInsets.all(10),
+          borderRadius: 10,
+          duration: const Duration(seconds: 10),
+          onTap: (snack) {
+            launchUrlAsync(
+              Uri.parse(
+                '${message.data['url']}}',
+              ),
+            );
+          },
+        );
+      }
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      launchUrlAsync(
-        Uri.parse(
-          '${message.data['url']}}',
-        ),
-      );
+      if (message.data['url'] != null) {
+        launchUrlAsync(
+          Uri.parse(
+            '${message.data['url']}}',
+          ),
+        );
+      }
     });
   } catch (e) {
     // TOdo
   }
   final sp = await SharedPreferences.getInstance();
+  await Hive.initFlutter();
+  Hive.registerAdapter(TemplateAdapter());
+  await Hive.openBox<Template>('templates');
   Get.create(() => sp);
   runApp(const MyApp());
 }

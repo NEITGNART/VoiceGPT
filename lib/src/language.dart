@@ -26,7 +26,7 @@ class Languages extends Translations {
           'voice_title': 'Giọng đọc AI',
           'change_voice_ai_success': 'Thay đổi giọng đọc AI thành công!',
           'suggest': 'Đề xuất tính năng',
-          'donation': 'Ủng hộ chúng tôi',
+          'donation': 'Ủng hộ tôi',
           'tutorial': 'Hướng dẫn sử dụng',
           'network': 'Kết nối mạng',
           'network_value':
@@ -68,6 +68,7 @@ class Languages extends Translations {
           'message_long': 'Thời gian để đọc có thể lâu hơn bình thường',
           'common_error': 'Một lỗi phổ biến',
           'copied': 'Sao chép thành công',
+          'txt_reuse': 'Tận dụng lại lời nhắn',
           'common_error_content':
               '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau(Nếu giọng nói không hoạt động xin tính năng giọng nói tự động)\n\nHãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
         },
@@ -75,6 +76,8 @@ class Languages extends Translations {
           //           'message_title' : 'Giọng đọc',
           // 'message_long' : 'Thời gian để đọc có thể lâu hơn bình thường',
           'message_title': 'AI Voice',
+          'txt_reuse': 'Reuse message',
+          'advance_feature': 'Tính năng nâng cao',
           'message_long': 'Reading time may be longer than usual',
           'greeting': 'Hello',
           'setting': 'App Setting',

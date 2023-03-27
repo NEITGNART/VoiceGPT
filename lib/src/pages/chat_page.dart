@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/models/model.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,14 @@ class ChatPage extends StatefulWidget {
 
   @override
   State<ChatPage> createState() => _ChatPageState();
+}
+
+class Template {
+  final String id;
+  final String title;
+  final String message;
+
+  Template(this.id, this.title, this.message);
 }
 
 class _ChatPageState extends State<ChatPage> {
@@ -46,6 +55,11 @@ class _ChatPageState extends State<ChatPage> {
   int soundPlayingIndex = -1;
   final Map<int, bool> soundPlayingMap = {};
   TextEditingController messageController = TextEditingController();
+  bool hasOpenTemplate = false;
+  final List<Template> templates = [
+    Template('1', '#math', 'I you help me with my math homework?'),
+    Template('1', '#literature', 'I you help me with my math homework?'),
+  ];
 
   late bool isAutoPlaying;
 
@@ -102,9 +116,6 @@ class _ChatPageState extends State<ChatPage> {
       ),
       body: SafeArea(
         child: Container(
-          decoration: const BoxDecoration(
-            color: kLightModeBackgroundColor,
-          ),
           child: Column(
             children: [
               // _topChat(),
@@ -356,6 +367,23 @@ class _ChatPageState extends State<ChatPage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    hasOpenTemplate = !hasOpenTemplate;
+                  });
+                },
+                child: Container(
+                  height: 50,
+                  width: 25,
+                  decoration: const BoxDecoration(),
+                  child: const Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              gapW12,
               Expanded(
                 child: AbsorbPointer(
                   absorbing: _isListening,
@@ -581,6 +609,36 @@ class _ChatPageState extends State<ChatPage> {
                 )
             ],
           ),
+          if (hasOpenTemplate) ...{
+            Container(
+              height: 75,
+              padding: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade100,
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+              ),
+              child: ListView.builder(
+                // horizontal: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: templates.length,
+                itemBuilder: (context, i) {
+                  return Container(
+                    margin: const EdgeInsets.all(5),
+                    child: InputChip(
+                        // blue
+                        backgroundColor: Colors.blue.shade300,
+                        label: Text(templates[i].title),
+                        onPressed: () {
+                          setState(() {
+                            messageController.text += templates[i].message;
+                          });
+                        }),
+                  );
+                },
+              ),
+            ),
+          }
         ],
       ),
     );

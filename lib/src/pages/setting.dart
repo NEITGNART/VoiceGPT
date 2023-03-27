@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/common/constants.dart';
+import 'package:chatgpt/src/pages/chat/my_reuse_text.dart';
 import 'package:chatgpt/src/pages/chat/representation/language_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -371,6 +372,38 @@ class _SettingPageState extends State<SettingPage> {
                           style: kTitle2Style.copyWith(
                             color: Colors.black,
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Get.to(const MyTextReuse());
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.interests_rounded),
+                      gapW20,
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'txt_reuse'.tr,
+                              style: kTitle2Style.copyWith(
+                                color: Colors.black,
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios)
+                          ],
                         ),
                       ),
                     ],
