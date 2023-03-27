@@ -64,11 +64,18 @@ class Languages extends Translations {
           'sound_error':
               'Hiện tại không thể phát âm, chúng tôi sẽ khắc phục sớm nhất có thể. Vui lòng thử lại sau',
           'sound_title': 'Giọng đọc AI',
+          'message_title': 'Giọng đọc',
+          'message_long': 'Thời gian để đọc có thể lâu hơn bình thường',
           'common_error': 'Một lỗi phổ biến',
+          'copied': 'Sao chép thành công',
           'common_error_content':
               '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau(Nếu giọng nói không hoạt động xin tính năng giọng nói tự động)\n\nHãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
         },
         'en_US': {
+          //           'message_title' : 'Giọng đọc',
+          // 'message_long' : 'Thời gian để đọc có thể lâu hơn bình thường',
+          'message_title': 'AI Voice',
+          'message_long': 'Reading time may be longer than usual',
           'greeting': 'Hello',
           'setting': 'App Setting',
           'language': 'Language',
@@ -125,6 +132,7 @@ class Languages extends Translations {
           'done': 'Done',
           'intro': 'Introduction ',
           'note': 'Common Issues',
+          'copied': 'Copied',
           'sound_title': 'Voice AI',
           'sound_error':
               'Currently unable to play sound, we will fix it as soon as possible. Please try again later',

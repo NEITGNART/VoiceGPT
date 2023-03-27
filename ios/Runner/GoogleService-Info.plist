@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>86992037195-s778se1sq38avs5d0d7fsr572tibc8bq.apps.googleusercontent.com</string>
+	<string>974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.86992037195-s778se1sq38avs5d0d7fsr572tibc8bq</string>
+	<string>com.googleusercontent.apps.974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCgzIVqoD14TQ_Niq_SK-8zNcrBPRYLhak</string>
+	<string>AIzaSyCxNOIapa_5S0LC3GAYVMxqrvhYimQUdvw</string>
 	<key>GCM_SENDER_ID</key>
-	<string>86992037195</string>
+	<string>974025291344</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.chatgpt</string>
+	<string>com.bard.chatgpt.hcmus</string>
 	<key>PROJECT_ID</key>
-	<string>voicegpt-63042</string>
+	<string>bard-gpt</string>
 	<key>STORAGE_BUCKET</key>
-	<string>voicegpt-63042.appspot.com</string>
+	<string>bard-gpt.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:86992037195:ios:1289a4f760178eab6a34ce</string>
+	<string>1:974025291344:ios:449064c5372ff363380355</string>
 </dict>
 </plist>

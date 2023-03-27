@@ -54,7 +54,6 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     initPrefs();
     _speech = Get.find<stt.SpeechToText>();
-
     player = AudioPlayer();
     soundPlayingMap[soundPlayingIndex] = false;
     assetsAudioPlayer.playlistFinished.listen((finished) {
@@ -281,6 +280,7 @@ class _ChatPageState extends State<ChatPage> {
 
         if (isPlayingSound == false) {
           assetsAudioPlayer.pause();
+          player.pause();
           return;
         }
 
@@ -297,18 +297,32 @@ class _ChatPageState extends State<ChatPage> {
             );
           } else {
             try {
+              if (message.length > 400) {
+                Get.snackbar('message_title'.tr, 'message_long'.tr,
+                    snackPosition: SnackPosition.BOTTOM, duration: 3.seconds);
+              }
               final audioBytes = await synthesizeSpeech(message);
-              await file.writeAsBytes(audioBytes);
-              await assetsAudioPlayer.open(
-                Audio.file(path),
-              );
+              if (Platform.isIOS) {
+                await file.writeAsBytes(audioBytes);
+                await assetsAudioPlayer.open(
+                  Audio.file(path),
+                );
+              } else {
+                final byteSouce = BytesSource(audioBytes);
+                await player.play(byteSouce);
+                await file.writeAsBytes(audioBytes);
+                setState(() {
+                  soundPlayingMap[soundPlayingIndex] = false;
+                });
+              }
             } catch (e) {
               rethrow;
             }
           }
         });
       } catch (e) {
-        Get.snackbar('sound_title'.tr, 'sound_error'.tr);
+        Get.snackbar('sound_title'.tr, 'sound_error'.tr,
+            snackPosition: SnackPosition.BOTTOM, duration: 3.seconds);
       }
       // } else {
       //   if (isDebounce == true) {

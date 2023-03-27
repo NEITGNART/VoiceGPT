@@ -6,6 +6,7 @@ import 'package:chatgpt/common/constants.dart';
 import 'package:chatgpt/network/admob_service_helper.dart';
 import 'package:chatgpt/src/pages/chat_page.dart';
 import 'package:chatgpt/src/pages/setting.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -82,6 +83,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     myBanner.load();
+    FirebaseMessaging.instance.requestPermission();
     _createInterstitialAd();
     // _showInterstitialAd();
   }
@@ -163,7 +165,6 @@ class _HomePageState extends State<HomePage> {
                 buttonWidget(
                   'setting'.tr,
                   () {
-                    _showInterstitialAd();
                     Get.to(
                       () => const SettingPage(),
                     );
@@ -173,6 +174,7 @@ class _HomePageState extends State<HomePage> {
                 buttonWidget(
                   'suggest'.tr,
                   () {
+                    _showInterstitialAd();
                     _launchUrl(
                       Uri.parse(
                         'https://forms.gle/LXmyxawkPM6az8Dq5',

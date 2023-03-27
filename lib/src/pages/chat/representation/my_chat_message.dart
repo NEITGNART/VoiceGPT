@@ -1,4 +1,3 @@
-import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,41 +26,35 @@ class ChatWidget extends StatelessWidget {
           Expanded(
             child: SizedBox(
               child: text.isNotEmpty
-                  ? AnimatedTextKit(
-                      animatedTexts: [
-                        TyperAnimatedText(
-                          text.replaceFirst('\n\n', ''),
-                        ),
-                      ],
-                      repeatForever: false,
-                      totalRepeatCount: 1,
-                    )
+                  ? Text(text.replaceFirst('\n\n', ''))
                   : Text('waiting'.tr),
             ),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                child: const Icon(Icons.copy),
-                onTap: () {
-                  // FlutterClipboard
-                  FlutterClipboard.copy(text).then((value) => {
-                        Get.snackbar(
-                          'copied'.tr,
-                          text,
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.white,
-                          colorText: Colors.black,
-                          margin: const EdgeInsets.all(10),
-                          borderRadius: 10,
-                          duration: const Duration(seconds: 2),
-                        )
-                      });
-                },
-              )
-            ],
-          )
+          if (text.isNotEmpty) ...{
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  child: const Icon(Icons.copy),
+                  onTap: () {
+                    // FlutterClipboard
+                    FlutterClipboard.copy(text).then((value) => {
+                          Get.snackbar(
+                            'copied'.tr,
+                            text,
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.white,
+                            colorText: Colors.black,
+                            margin: const EdgeInsets.all(10),
+                            borderRadius: 10,
+                            duration: const Duration(seconds: 2),
+                          )
+                        });
+                  },
+                )
+              ],
+            )
+          }
         ],
       ),
     );
