@@ -89,10 +89,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    myBanner.dispose();
+    _interstitialAd?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CircleAvatar(
               child: SvgPicture.asset(
@@ -153,19 +162,23 @@ class _HomePageState extends State<HomePage> {
                   'nav_chat'.tr,
                   () {
                     _showInterstitialAd();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatPage(),
-                      ),
+                    // Go to chat page and this page will be disposed
+                    Get.offAll(
+                      () => const ChatPage(),
                     );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => const ChatPage(),
+                    //   ),
+                    // );
                   },
                   SvgPicture.asset('assets/chat.svg', height: 40),
                 ),
                 buttonWidget(
                   'setting'.tr,
                   () {
-                    Get.to(
+                    Get.offAll(
                       () => const SettingPage(),
                     );
                   },

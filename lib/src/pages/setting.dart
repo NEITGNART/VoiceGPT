@@ -14,6 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'chat/representation/my_language.dart';
 import 'chat/representation/my_voice_language.dart';
+import 'home_page.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -48,6 +49,12 @@ class _SettingPageState extends State<SettingPage> {
         shadowColor: Colors.transparent,
         title: Row(
           children: [
+            IconButton(
+              onPressed: () {
+                Get.to(const HomePage(), transition: Transition.rightToLeft);
+              },
+              icon: const Icon(Icons.arrow_back_ios),
+            ),
             Text(
               'setting'.tr,
               // align left
@@ -76,7 +83,7 @@ class _SettingPageState extends State<SettingPage> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.language),
+                          const Icon(Icons.language, color: Colors.blue),
                           gapW20,
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +123,8 @@ class _SettingPageState extends State<SettingPage> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.record_voice_over_rounded),
+                          const Icon(Icons.record_voice_over_rounded,
+                              color: Colors.blue),
                           gapW20,
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +171,8 @@ class _SettingPageState extends State<SettingPage> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.record_voice_over_outlined),
+                        const Icon(Icons.record_voice_over_outlined,
+                            color: Colors.blue),
                         gapW20,
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +212,7 @@ class _SettingPageState extends State<SettingPage> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.voice_chat),
+                          const Icon(Icons.voice_chat, color: Colors.blue),
                           gapW20,
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,48 +242,6 @@ class _SettingPageState extends State<SettingPage> {
                 ),
               ),
               GestureDetector(
-                onTap: () async {
-                  try {
-                    if (!await launchUrl(
-                      Uri.parse(
-                        'https://www.buymeacoffee.com/zzmanhtien3',
-                      ),
-                      mode: LaunchMode.externalApplication,
-                    )) {}
-                  } catch (e) {
-                    // TODO: implement catch
-                  }
-                },
-                child: Container(
-                  margin:
-                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
-                  padding: const EdgeInsets.all(10),
-                  decoration: decoration,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          const Icon(Icons.monetization_on),
-                          gapW20,
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'donation'.tr,
-                                style: kTitle2Style.copyWith(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
                 onTap: () {
                   Get.to(const MyExpansionPanel());
                 },
@@ -286,7 +253,7 @@ class _SettingPageState extends State<SettingPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.interests_rounded),
+                      const Icon(Icons.interests_rounded, color: Colors.blue),
                       gapW20,
                       Expanded(
                         child: Row(
@@ -309,6 +276,7 @@ class _SettingPageState extends State<SettingPage> {
               GestureDetector(
                 onTap: () {
                   Get.to(IntroductionScreen(
+                    isTopSafeArea: true,
                     pages: [
                       PageViewModel(
                         title: 'intro_1'.tr,
@@ -325,6 +293,20 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       PageViewModel(
+                        title: 'txt_reuse'.tr,
+                        body: 'intro_6'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_6.png",
+                        ),
+                      ),
+                      // PageViewModel(
+                      //   title: 'intro_2'.tr,
+                      //   body: 'intro_2_content'.tr,
+                      //   image: Image.asset(
+                      //     "assets/images/intro_2.png",
+                      //   ),
+                      // ),
+                      PageViewModel(
                         title: 'intro_3'.tr,
                         body: 'intro_3_content'.tr,
                         image: Image.asset(
@@ -332,17 +314,17 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       PageViewModel(
-                        title: 'intro_4'.tr,
-                        body: 'intro_4_content'.tr,
-                        image: Image.asset(
-                          "assets/images/intro_4.png",
-                        ),
-                      ),
-                      PageViewModel(
                         title: 'intro_5'.tr,
                         body: 'intro_5_content'.tr,
                         image: Image.asset(
                           "assets/images/intro_5.png",
+                        ),
+                      ),
+                      PageViewModel(
+                        title: 'intro_4'.tr,
+                        body: 'intro_4_content'.tr,
+                        image: Image.asset(
+                          "assets/images/intro_4.png",
                         ),
                       ),
                     ],
@@ -364,7 +346,7 @@ class _SettingPageState extends State<SettingPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.help_outline),
+                      const Icon(Icons.help_outline, color: Colors.blue),
                       gapW20,
                       Expanded(
                         child: Text(
@@ -390,7 +372,7 @@ class _SettingPageState extends State<SettingPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(Icons.interests_rounded),
+                      const Icon(Icons.quickreply, color: Colors.blue),
                       gapW20,
                       Expanded(
                         child: Row(
@@ -402,9 +384,53 @@ class _SettingPageState extends State<SettingPage> {
                                 color: Colors.black,
                               ),
                             ),
-                            const Icon(Icons.arrow_forward_ios)
+                            const Icon(
+                              Icons.arrow_forward_ios,
+                            )
                           ],
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  try {
+                    if (!await launchUrl(
+                      Uri.parse(
+                        'https://www.buymeacoffee.com/zzmanhtien3',
+                      ),
+                      mode: LaunchMode.externalApplication,
+                    )) {}
+                  } catch (e) {
+                    // TODO: implement catch
+                  }
+                },
+                child: Container(
+                  margin:
+                      const EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: decoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.monetization_on, color: Colors.blue),
+                          gapW20,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'donation'.tr,
+                                style: kTitle2Style.copyWith(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
                       ),
                     ],
                   ),
@@ -451,7 +477,7 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
       appBar: AppBar(
         title: Row(
           children: [
-            Text('tutorial'.tr),
+            Text('note'.tr),
           ],
         ),
         shadowColor: Colors.transparent,
@@ -462,6 +488,8 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
             Container(
               padding: const EdgeInsets.all(16.0),
               child: ExpansionPanelList(
+                expandIconColor: Colors.blue,
+                // click on header to expand on the icon
                 expansionCallback: (int index, bool isExpanded) {
                   setState(() {
                     _currentIndex = isExpanded ? -1 : index;

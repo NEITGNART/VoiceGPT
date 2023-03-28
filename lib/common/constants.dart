@@ -99,4 +99,4 @@ var kCaptionLabelStyle = const TextStyle(
   decoration: TextDecoration.none,
 );
 
-const int textLimit = 200;
+const int textLimit = 2000;

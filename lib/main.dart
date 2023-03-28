@@ -80,6 +80,7 @@ void main() async {
   }
   final sp = await SharedPreferences.getInstance();
   await Hive.initFlutter();
+
   Hive.registerAdapter(TemplateAdapter());
   Get.create(() => sp);
   runApp(const MyApp());

@@ -34,7 +34,7 @@ class _ArrowIconAnimationState extends State<ArrowIconAnimation>
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isExpanded) {
+    if (widget.isExpanded) {
       _animationController.forward();
     } else {
       _animationController.reverse();
@@ -43,7 +43,8 @@ class _ArrowIconAnimationState extends State<ArrowIconAnimation>
       child: AnimatedIcon(
         icon: AnimatedIcons.menu_arrow,
         progress: _iconTurns,
-        color: Colors.black,
+        size: 30,
+        color: Colors.blue,
       ),
     );
   }

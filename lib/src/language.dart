@@ -4,6 +4,8 @@ class Languages extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'vi_VN': {
+          'service_err':
+              'Hệ thống có vấn đề, vui lòng lại lời nhắn!. Xin lỗi vì sự bất tiện này!',
           'greeting': 'Xin chào',
           'setting': 'Cài đặt ứng dụng',
           'language': 'Ngôn ngữ',
@@ -57,6 +59,8 @@ class Languages extends Translations {
           'intro_5': 'Ngôn ngữ',
           'intro_5_content':
               'Hỗ trợ tiếng Anh và tiếng Việt. Chúng tôi sẽ thêm nhiều ngôn ngữ khác trong tương lai.',
+          'intro_6':
+              'Tạo các lời nhắn mẫu, giúp tiết kiệm thời gian khi gửi tin nhắn',
           'skip': 'Bỏ qua',
           'done': 'Hoàn thành',
           'intro': 'Giới thiệu',
@@ -68,15 +72,46 @@ class Languages extends Translations {
           'message_long': 'Thời gian để đọc có thể lâu hơn bình thường',
           'common_error': 'Một lỗi phổ biến',
           'copied': 'Sao chép thành công',
-          'txt_reuse': 'Tận dụng lại lời nhắn',
+          'txt_reuse': 'Nhắn tin nhanh',
+          'no_template': 'Hãy bấm vào + để thêm mẫu',
+          'create_template': 'Tạo bản mẫu',
+          'template': 'Bản mẫu',
+          'title': 'Tiêu đề',
+          'title_hint': 'Nhập tiêu đề',
+          'content': 'Nội dung',
+          'content_hint': 'Nhập nội dung',
+          'upd_template': 'Cập nhật bản mẫu',
+          'del_all_template': 'Xóa tất cả bản mẫu',
+          'del_all_content':
+              'Khi bấm xóa tất cả, bạn sẽ không thể khôi phục lại',
+          'cancel': 'Hủy',
+          'del': 'Xóa',
+          'success': 'Thành công',
+          'edit': 'Chỉnh sửa',
           'common_error_content':
               '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau(Nếu giọng nói không hoạt động xin tính năng giọng nói tự động)\n\nHãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
         },
         'en_US': {
-          //           'message_title' : 'Giọng đọc',
-          // 'message_long' : 'Thời gian để đọc có thể lâu hơn bình thường',
+          'service_err':
+              'Service service, please try again!. Sorry for the inconvenience',
+          'intro_6': 'Create templates to save time when sending messages',
+          'del_all_template': 'Delete all templates',
+          'del_all_content':
+              'When you press delete all, you will not be able to restore it',
+          'cancel': 'Cancel',
+          'del': 'Delete',
+          'title_hint': 'Enter title',
+          'edit': 'Edit Template',
+          'upd_template': 'Update template',
+          'success': 'Success',
+          'template': 'Templates',
           'message_title': 'AI Voice',
-          'txt_reuse': 'Reuse message',
+          'content': 'Message',
+          'content_hint': 'Enter message',
+          'title': 'Title',
+          'create_template': 'Create a template',
+          'no_template': 'Click + to add template',
+          'txt_reuse': 'Quick Message',
           'advance_feature': 'Tính năng nâng cao',
           'message_long': 'Reading time may be longer than usual',
           'greeting': 'Hello',

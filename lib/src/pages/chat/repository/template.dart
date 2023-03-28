@@ -38,4 +38,17 @@ class TemplateController extends GetxController {
       templates.removeAt(index);
     }
   }
+
+  void deleteAllTemplates() {
+    templateBox.clear();
+    templates.clear();
+  }
+
+  void updateTemplate(Template template) {
+    final index = templates.indexWhere((t) => t.id == template.id);
+    if (index >= 0) {
+      templateBox.put(template.id, template);
+      templates[index] = template;
+    }
+  }
 }

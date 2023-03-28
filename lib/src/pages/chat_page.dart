@@ -3,10 +3,11 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart' as audio;
 import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/models/model.dart';
+import 'package:chatgpt/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,6 +22,8 @@ import 'chat/my_reuse_text.dart';
 import 'chat/repository/template.dart';
 import 'chat/representation/my_arrow_icon.dart';
 import 'chat/representation/my_chat_message.dart';
+
+// import ENUM  PLAYERSTATE from audioplayer
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -45,11 +48,11 @@ class _ChatPageState extends State<ChatPage> {
   late SharedPreferences prefs;
   bool isPlayingSound = false;
   ChatRepository chatRepository = ChatRepositoryImpl();
-  final assetsAudioPlayer = AssetsAudioPlayer();
+  final _assetsAudioPlayer = AssetsAudioPlayer();
   late stt.SpeechToText _speech;
   bool _isListening = false;
   final ScrollController _scrollController = ScrollController();
-  late final AudioPlayer player;
+  late final audio.AudioPlayer player = audio.AudioPlayer();
   String? _currentLocaleId;
   bool isDebounce = true;
   String conversationId = '';
@@ -58,12 +61,6 @@ class _ChatPageState extends State<ChatPage> {
   final Map<int, bool> soundPlayingMap = {};
   TextEditingController messageController = TextEditingController();
   bool hasOpenTemplate = false;
-  // final List<Template> templates = [
-  //   Template('1', '#math', 'I you help me with my math homework?'),
-  //   Template('1', '#literature', 'I you help me with my math homework?'),
-  // ];
-
-  final ScrollController _inputScrollController = ScrollController();
 
   late bool isAutoPlaying;
 
@@ -72,10 +69,31 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     initPrefs();
     _speech = Get.find<stt.SpeechToText>();
-    player = AudioPlayer();
     soundPlayingMap[soundPlayingIndex] = false;
-    assetsAudioPlayer.playlistFinished.listen((finished) {
+
+    _assetsAudioPlayer.playlistFinished.listen((finished) {
       if (finished) {
+        if (mounted) {
+          setState(() {
+            soundPlayingMap[soundPlayingIndex] = false;
+          });
+        }
+      }
+    });
+
+    player.onPlayerStateChanged.listen((audio.PlayerState s) {
+      if (s == audio.PlayerState.stopped ||
+          s == audio.PlayerState.paused ||
+          s == audio.PlayerState.completed) {
+        if (mounted) {
+          setState(() {
+            soundPlayingMap[soundPlayingIndex] = false;
+          });
+        }
+      }
+    });
+    player.onPlayerComplete.listen((event) {
+      if (mounted) {
         setState(() {
           soundPlayingMap[soundPlayingIndex] = false;
         });
@@ -85,12 +103,11 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
-    super.dispose();
     player.dispose();
-    assetsAudioPlayer.dispose();
+    _assetsAudioPlayer.dispose();
     _scrollController.dispose();
     messageController.dispose();
-    _inputScrollController.dispose();
+    super.dispose();
   }
 
   void initPrefs() {
@@ -103,10 +120,21 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final TemplateController templateController = Get.find();
-    final templates = templateController.templates;
     return Scaffold(
       appBar: AppBar(
+        // leading
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            player.dispose();
+            _assetsAudioPlayer.dispose();
+            // left
+            Get.offAll(
+              const HomePage(),
+              transition: Transition.rightToLeft,
+            );
+          },
+        ),
         title: Row(
           children: [
             const CircleAvatar(
@@ -122,25 +150,15 @@ class _ChatPageState extends State<ChatPage> {
         // ],
       ),
       body: SafeArea(
-        child: Container(
-          child: Column(
-            children: [
-              // _topChat(),
-              Expanded(child: _bodyChat()),
-              _formChat(),
-            ],
-          ),
+        child: Column(
+          children: [
+            // _topChat(),
+            Expanded(child: _bodyChat()),
+            _formChat(),
+          ],
         ),
       ),
     );
-  }
-
-  void saveData(int value) {
-    prefs.setInt("token", value);
-  }
-
-  int getData() {
-    return prefs.getInt("token") ?? 1;
   }
 
   Widget _bodyChat() {
@@ -281,86 +299,69 @@ class _ChatPageState extends State<ChatPage> {
   Future<void> playSound(String message, String? id, int index) async {
     if (Platform.isIOS || true) {
       try {
-        setState(() {
-          if (isPlayingSound == true &&
-              index != -1 &&
-              index != soundPlayingIndex) {
-            soundPlayingMap[soundPlayingIndex] = false;
-            isPlayingSound = true;
-          } else {
-            isPlayingSound = !isPlayingSound;
-          }
-          // flip the playing
-          soundPlayingMap[index] = isPlayingSound;
-          // When the audio is finised playing, reset the index. We know the index to pause icon
-          soundPlayingIndex = index;
-        });
-
-        if (isPlayingSound == false) {
-          assetsAudioPlayer.pause();
-          player.pause();
-          return;
-        }
-
-        final Directory tempDir = await getTemporaryDirectory();
-        // save audio file to temporary directory using tempDir
-        final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
-        // check if file exists
-        final File file = File(path);
-        file.exists().then((value) async {
-          if (value) {
-            await assetsAudioPlayer.open(
-              Audio.file(path),
-              // pause
-            );
-          } else {
-            try {
-              if (message.length > 400) {
-                Get.snackbar('message_title'.tr, 'message_long'.tr,
-                    snackPosition: SnackPosition.BOTTOM, duration: 3.seconds);
-              }
-              final audioBytes = await synthesizeSpeech(message);
-              if (Platform.isIOS) {
-                await file.writeAsBytes(audioBytes);
-                await assetsAudioPlayer.open(
-                  Audio.file(path),
-                );
-              } else {
-                final byteSouce = BytesSource(audioBytes);
-                await player.play(byteSouce);
-                await file.writeAsBytes(audioBytes);
-                setState(() {
-                  soundPlayingMap[soundPlayingIndex] = false;
-                });
-              }
-            } catch (e) {
-              rethrow;
+        if (mounted) {
+          setState(() {
+            if (isPlayingSound == true &&
+                index != -1 &&
+                index != soundPlayingIndex) {
+              soundPlayingMap[soundPlayingIndex] = false;
+              isPlayingSound = true;
+            } else {
+              isPlayingSound = !isPlayingSound;
             }
+            // flip the playing
+            soundPlayingMap[index] = isPlayingSound;
+            // When the audio is finised playing, reset the index. We know the index to pause icon
+            soundPlayingIndex = index;
+          });
+
+          if (isPlayingSound == false) {
+            _assetsAudioPlayer.pause();
+            player.pause();
+            return;
           }
-        });
+
+          final Directory tempDir = await getTemporaryDirectory();
+          // save audio file to temporary directory using tempDir
+          final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
+          // check if file exists
+          final File file = File(path);
+          file.exists().then((value) async {
+            if (value) {
+              await _assetsAudioPlayer.open(
+                Audio.file(path),
+                // pause
+              );
+            } else {
+              if (mounted) {
+                try {
+                  if (message.length > 400) {
+                    Get.snackbar('message_title'.tr, 'message_long'.tr,
+                        snackPosition: SnackPosition.BOTTOM,
+                        duration: 3.seconds);
+                  }
+                  final audioBytes = await synthesizeSpeech(message);
+                  if (Platform.isIOS) {
+                    await file.writeAsBytes(audioBytes);
+                    await _assetsAudioPlayer.open(
+                      Audio.file(path),
+                    );
+                  } else {
+                    final byteSouce = audio.BytesSource(audioBytes);
+                    await player.play(byteSouce);
+                    await file.writeAsBytes(audioBytes);
+                  }
+                } catch (e) {
+                  rethrow;
+                }
+              }
+            }
+          });
+        }
       } catch (e) {
         Get.snackbar('sound_title'.tr, 'sound_error'.tr,
             snackPosition: SnackPosition.BOTTOM, duration: 3.seconds);
       }
-      // } else {
-      //   if (isDebounce == true) {
-      //     isDebounce = false;
-      //     AudioCache cache = AudioCache();
-      //     final audioBytes = await synthesizeSpeech(message);
-      //     final byteSouce = BytesSource(audioBytes);
-      //     // save audio file to temporary directory using tempDir
-      //     final Directory tempDir = await getTemporaryDirectory();
-      //     final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
-
-      //     await player.play(byteSouce);
-      //     Timer(
-      //       const Duration(seconds: 3),
-      //       () {
-      //         isDebounce = true;
-      //       },
-      //     );
-      //   }
-      // }
     }
   }
 
@@ -389,64 +390,64 @@ class _ChatPageState extends State<ChatPage> {
               ),
               gapW12,
               Expanded(
-                child: AbsorbPointer(
-                  absorbing: _isListening,
-                  child: TextField(
-                    buildCounter: (BuildContext context,
-                            {required int currentLength,
-                            required bool isFocused,
-                            required int? maxLength}) =>
-                        null,
-                    // display scroll on keyboard on the right
-                    autocorrect: true,
-                    maxLength: textLimit,
-                    onChanged: (value) {
-                      setState(() {
-                        if (value.length == textLimit) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              duration: const Duration(milliseconds: 500),
-                              content: Text(
-                                'longMessage'.tr,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              backgroundColor: Colors.red,
+                child: TextField(
+                  buildCounter: (BuildContext context,
+                          {required int currentLength,
+                          required bool isFocused,
+                          required int? maxLength}) =>
+                      null,
+                  // display scroll on keyboard on the right
+                  autocorrect: true,
+                  maxLength: textLimit,
+                  // focus on the textfield
+                  onChanged: (value) {
+                    setState(() {
+                      if (value.length == textLimit) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            duration: const Duration(milliseconds: 500),
+                            content: Text(
+                              'longMessage'.tr,
+                              style: const TextStyle(color: Colors.white),
                             ),
-                          );
-                        }
-                      });
-                    },
-                    // croll if the textfield is overflow
-                    maxLines: 4,
-                    minLines: 1,
-                    controller: messageController,
-                    decoration: InputDecoration(
-                      hintText: !_isListening ? 'hint'.tr : '',
-                      border: const OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 2,
-                        ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      // move the cursor to the end of the textfield
+                      messageController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: messageController.text.length));
+                    });
+                  },
+                  // croll if the textfield is overflow
+                  maxLines: 4,
+                  minLines: 1,
+                  controller: messageController,
+                  decoration: InputDecoration(
+                    hintText: !_isListening ? 'hint'.tr : '',
+                    border: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.grey,
+                        width: 2,
                       ),
-                      prefixIcon: _isListening && messageController.text.isEmpty
-                          ? Container(
-                              padding: EdgeInsets.only(
-                                  left:
-                                      MediaQuery.of(context).size.width * 0.1),
-                              child: MyAudioWave(context: context),
-                            )
-                          : null,
-                      filled: true,
-                      fillColor: Colors.blueGrey.shade50,
-                      contentPadding: const EdgeInsets.all(15),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blueGrey.shade50),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blueGrey.shade50),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                    ),
+                    prefixIcon: _isListening && messageController.text.isEmpty
+                        ? Container(
+                            padding: EdgeInsets.only(
+                                left: MediaQuery.of(context).size.width * 0.1),
+                            child: MyAudioWave(context: context),
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: Colors.blueGrey.shade50,
+                    contentPadding: const EdgeInsets.all(15),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey.shade50),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueGrey.shade50),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                 ),
@@ -584,14 +585,16 @@ class _ChatPageState extends State<ChatPage> {
                                 chat: 1,
                                 id: parentMessageId);
                           }
-                          setState(() {
-                            messageController.clear();
-                            _scrollController.animateTo(
-                              _scrollController.position.maxScrollExtent,
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeOut,
-                            );
-                          });
+                          if (mounted) {
+                            setState(() {
+                              messageController.clear();
+                              _scrollController.animateTo(
+                                _scrollController.position.maxScrollExtent,
+                                duration: const Duration(milliseconds: 500),
+                                curve: Curves.easeOut,
+                              );
+                            });
+                          }
                         }),
                         child: Container(
                           width: 50,
@@ -627,9 +630,9 @@ class _ChatPageState extends State<ChatPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Templates",
-                        style: TextStyle(
+                      Text(
+                        'template'.tr,
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
@@ -693,8 +696,8 @@ class TemplateList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       if (templateController.templates.isEmpty) {
-        return const Center(
-          child: Text("No templates"),
+        return Center(
+          child: Text('no_template'.tr),
         );
       }
       return ListView.builder(
