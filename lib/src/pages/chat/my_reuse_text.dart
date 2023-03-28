@@ -46,6 +46,9 @@ class _MyTextReuseState extends State<MyTextReuse> {
   }
 
   void _showCreateDialog() {
+    // clear the text fields
+    _titleController.clear();
+    _messageController.clear();
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -101,10 +104,25 @@ class _MyTextReuseState extends State<MyTextReuse> {
         title: Text('txt_reuse'.tr),
         actions: [
           IconButton(
-              icon: const Icon(Icons.remove_circle_outline),
+              icon: const Icon(Icons.delete),
               onPressed: () {
-                // delete all templates
-                box.deleteFromDisk();
+                // show confirmation dialog
+                Get.defaultDialog(
+                  title: 'Delete all templates?',
+                  middleText: 'This action cannot be undone',
+                  textConfirm: 'Delete',
+                  backgroundColor: Colors.white,
+                  confirmTextColor: Colors.red.withOpacity(0.5),
+                  buttonColor: Colors.transparent,
+                  // color of the confirm button
+                  onConfirm: () {
+                    // delete all templates but not close the box
+                    box.deleteAll(box.keys.toList());
+                    setState(() {});
+                  },
+                  // cancel
+                  textCancel: 'Cancel',
+                );
               }),
         ],
       ),

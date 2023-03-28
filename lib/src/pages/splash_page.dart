@@ -1,3 +1,4 @@
+import 'package:chatgpt/src/pages/chat/representation/repository/template.dart';
 import 'package:chatgpt/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -89,6 +90,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(TemplateController());
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(child: Image.asset('assets/images/splash.png')),

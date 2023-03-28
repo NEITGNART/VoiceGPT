@@ -19,6 +19,7 @@ import '../../models/chat.dart';
 import '../../network/api_services.dart';
 import '../chat/presentation/audio_waves.dart';
 import 'chat/representation/my_chat_message.dart';
+import 'chat/representation/repository/template.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -56,10 +57,12 @@ class _ChatPageState extends State<ChatPage> {
   final Map<int, bool> soundPlayingMap = {};
   TextEditingController messageController = TextEditingController();
   bool hasOpenTemplate = false;
-  final List<Template> templates = [
-    Template('1', '#math', 'I you help me with my math homework?'),
-    Template('1', '#literature', 'I you help me with my math homework?'),
-  ];
+  // final List<Template> templates = [
+  //   Template('1', '#math', 'I you help me with my math homework?'),
+  //   Template('1', '#literature', 'I you help me with my math homework?'),
+  // ];
+
+  final ScrollController _inputScrollController = ScrollController();
 
   late bool isAutoPlaying;
 
@@ -86,6 +89,7 @@ class _ChatPageState extends State<ChatPage> {
     assetsAudioPlayer.dispose();
     _scrollController.dispose();
     messageController.dispose();
+    _inputScrollController.dispose();
   }
 
   void initPrefs() {
@@ -98,6 +102,8 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final TemplateController templateController = Get.find();
+    final templates = templateController.templates;
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -618,25 +624,7 @@ class _ChatPageState extends State<ChatPage> {
                 color: Colors.blue.shade100,
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: ListView.builder(
-                // horizontal: true,
-                scrollDirection: Axis.horizontal,
-                itemCount: templates.length,
-                itemBuilder: (context, i) {
-                  return Container(
-                    margin: const EdgeInsets.all(5),
-                    child: InputChip(
-                        // blue
-                        backgroundColor: Colors.blue.shade300,
-                        label: Text(templates[i].title),
-                        onPressed: () {
-                          setState(() {
-                            messageController.text += templates[i].message;
-                          });
-                        }),
-                  );
-                },
-              ),
+              child: TemplateList(messageController: messageController),
             ),
           }
         ],
@@ -668,6 +656,38 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 }
+
+class TemplateList extends StatelessWidget {
+  final TemplateController templateController = Get.find<TemplateController>();
+  final TextEditingController messageController;
+
+  TemplateList({Key? key, required this.messageController}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: templateController.templates.length,
+          itemBuilder: (context, i) {
+            return Container(
+              margin: const EdgeInsets.all(5),
+              child: InputChip(
+                  backgroundColor: Colors.blue.shade300,
+                  label: Text(templateController.templates[i].title),
+                  onPressed: () {
+                    messageController.text +=
+                        templateController.templates[i].message;
+                    // point to the end of the text
+                    messageController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: messageController.text.length));
+                  }),
+            );
+          },
+        ));
+  }
+}
+
+
 
 
 // class FlowMenu extends StatefulWidget {

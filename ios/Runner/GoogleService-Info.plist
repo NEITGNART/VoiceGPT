@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg.apps.googleusercontent.com</string>
+	<string>974025291344-gkd45d40d55nu0ik26c75jh2m7rogegp.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg</string>
+	<string>com.googleusercontent.apps.974025291344-gkd45d40d55nu0ik26c75jh2m7rogegp</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCxNOIapa_5S0LC3GAYVMxqrvhYimQUdvw</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.bard.chatgpt.hcmus</string>
+	<string>com.bard.hcmus</string>
 	<key>PROJECT_ID</key>
 	<string>bard-gpt</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:974025291344:ios:449064c5372ff363380355</string>
+	<string>1:974025291344:ios:f4e059d71b0f743e380355</string>
 </dict>
 </plist>
