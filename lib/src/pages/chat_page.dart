@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'dart:async';
 import 'dart:io';
 
@@ -18,8 +17,10 @@ import '../../common/constants.dart';
 import '../../models/chat.dart';
 import '../../network/api_services.dart';
 import '../chat/presentation/audio_waves.dart';
+import 'chat/my_reuse_text.dart';
+import 'chat/repository/template.dart';
+import 'chat/representation/my_arrow_icon.dart';
 import 'chat/representation/my_chat_message.dart';
-import 'chat/representation/repository/template.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -383,10 +384,7 @@ class _ChatPageState extends State<ChatPage> {
                   height: 50,
                   width: 25,
                   decoration: const BoxDecoration(),
-                  child: const Icon(
-                    Icons.keyboard_arrow_right,
-                    color: Colors.black,
-                  ),
+                  child: ArrowIconAnimation(isExpanded: hasOpenTemplate),
                 ),
               ),
               gapW12,
@@ -617,14 +615,42 @@ class _ChatPageState extends State<ChatPage> {
           ),
           if (hasOpenTemplate) ...{
             Container(
-              height: 75,
+              height: 100,
               padding: const EdgeInsets.all(10),
               margin: const EdgeInsets.only(top: 10),
               decoration: BoxDecoration(
                 color: Colors.blue.shade100,
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: TemplateList(messageController: messageController),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Templates",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // icon +
+                      GestureDetector(
+                        onTap: () {
+                          Get.to(const MyTextReuse());
+                        },
+                        child: const Icon(
+                          Icons.add,
+                          size: 30,
+                        ),
+                      )
+                    ],
+                  ),
+                  Expanded(
+                      child:
+                          TemplateList(messageController: messageController)),
+                ],
+              ),
             ),
           }
         ],
@@ -665,25 +691,32 @@ class TemplateList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: templateController.templates.length,
-          itemBuilder: (context, i) {
-            return Container(
-              margin: const EdgeInsets.all(5),
-              child: InputChip(
-                  backgroundColor: Colors.blue.shade300,
-                  label: Text(templateController.templates[i].title),
-                  onPressed: () {
-                    messageController.text +=
-                        templateController.templates[i].message;
-                    // point to the end of the text
-                    messageController.selection = TextSelection.fromPosition(
-                        TextPosition(offset: messageController.text.length));
-                  }),
-            );
-          },
-        ));
+    return Obx(() {
+      if (templateController.templates.isEmpty) {
+        return const Center(
+          child: Text("No templates"),
+        );
+      }
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: templateController.templates.length,
+        itemBuilder: (context, i) {
+          return Container(
+            margin: const EdgeInsets.all(5),
+            child: InputChip(
+                backgroundColor: Colors.blue.shade300,
+                label: Text(templateController.templates[i].title),
+                onPressed: () {
+                  messageController.text +=
+                      templateController.templates[i].message;
+                  // point to the end of the text
+                  messageController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: messageController.text.length));
+                }),
+          );
+        },
+      );
+    });
   }
 }
 

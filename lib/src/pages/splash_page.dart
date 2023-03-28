@@ -1,4 +1,4 @@
-import 'package:chatgpt/src/pages/chat/representation/repository/template.dart';
+import 'package:chatgpt/src/pages/chat/repository/template.dart';
 import 'package:chatgpt/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
