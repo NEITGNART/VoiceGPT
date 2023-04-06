@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../utils/constants.dart';
+import '../common/my_admob.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,9 +28,6 @@ class _HomePageState extends State<HomePage> {
   InterstitialAd? _interstitialAd;
   bool _isButtonEnabled = true;
   bool wantSmallNativeAd = false;
-
-  final BannerAd myBanner =
-      createBannerAds(AdMobService.mainPageBannerId ?? '');
 
   void _createInterstitialAd() {
     InterstitialAd.load(
@@ -49,7 +46,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
 
   Future<void> _showInterstitialAd() async {
     if (_interstitialAd == null) {
@@ -85,8 +81,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    myBanner.load();
-
     FirebaseMessaging.instance.requestPermission();
     _createInterstitialAd();
     // _showInterstitialAd();
@@ -94,7 +88,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    myBanner.dispose();
     _interstitialAd?.dispose();
     super.dispose();
   }
@@ -167,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                       colorText: Colors.black,
                       margin: const EdgeInsets.all(20),
                       borderRadius: 20,
-                      duration: const Duration(seconds: 1),
+                      duration: const Duration(milliseconds: 1000),
                     );
                     await Future.delayed(const Duration(milliseconds: 2000));
                     await _showInterstitialAd();
@@ -199,20 +192,14 @@ class _HomePageState extends State<HomePage> {
                   'assets/hi.svg',
                   height: 300,
                 ),
-
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: myBanner == null
-          ? const SizedBox()
-          : Container(
-              alignment: Alignment.center,
-              width: myBanner.size.width.toDouble(),
-              height: myBanner.size.height.toDouble(),
-              child: AdWidget(ad: myBanner),
-            ),
+      bottomNavigationBar: MyBannerAd(
+        adUnitId: AdMobService.mainPageBannerId ?? '',
+      ),
     );
   }
 

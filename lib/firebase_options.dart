@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,30 +49,21 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDi09G865R_T8KzIJ-XYMirONDUj2TSkdc',
-    appId: '1:974025291344:web:92f69456cf99ad3e380355',
-    messagingSenderId: '974025291344',
-    projectId: 'bard-gpt',
-    authDomain: 'bard-gpt.firebaseapp.com',
-    storageBucket: 'bard-gpt.appspot.com',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAWbB_eW-TqbF2L8idnAlCtGuImo10R5GM',
-    appId: '1:974025291344:android:217aa7e7b32d3886380355',
-    messagingSenderId: '974025291344',
-    projectId: 'bard-gpt',
-    storageBucket: 'bard-gpt.appspot.com',
+    apiKey: 'AIzaSyALydtzxjejdoeQllz_lwU7RRDZPHceqvI',
+    appId: '1:322854016771:android:1ddd8caa3a894200267b36',
+    messagingSenderId: '322854016771',
+    projectId: 'bardgpt-super-ai-chatbot-cfe0e',
+    storageBucket: 'bardgpt-super-ai-chatbot-cfe0e.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCxNOIapa_5S0LC3GAYVMxqrvhYimQUdvw',
-    appId: '1:974025291344:ios:449064c5372ff363380355',
-    messagingSenderId: '974025291344',
-    projectId: 'bard-gpt',
-    storageBucket: 'bard-gpt.appspot.com',
-    iosClientId: '974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg.apps.googleusercontent.com',
-    iosBundleId: 'com.bard.chatgpt.hcmus',
+    apiKey: 'AIzaSyCQj6oUIsoqhp8Cf3AqZp4VwR8EwW9F3R4',
+    appId: '1:322854016771:ios:d17abf2c5a0d83db267b36',
+    messagingSenderId: '322854016771',
+    projectId: 'bardgpt-super-ai-chatbot-cfe0e',
+    storageBucket: 'bardgpt-super-ai-chatbot-cfe0e.appspot.com',
+    iosClientId: '322854016771-7um83e0t8pkgkqdiphe29r3qr85pmiar.apps.googleusercontent.com',
+    iosBundleId: 'com.bard.hcmus',
   );
 }

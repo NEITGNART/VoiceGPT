@@ -1,8 +1,7 @@
-import 'package:chatgpt/utils/constants.dart';
+import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../../common/constants.dart';
 import '../../../../network/admob_service_helper.dart';
@@ -16,8 +15,6 @@ class MyExpansionPanel extends StatefulWidget {
 }
 
 class _MyExpansionPanelState extends State<MyExpansionPanel> {
-  final BannerAd myBanner = createBannerAds(AdMobService.faqBannerID ?? '');
-
   final List<Item> _items = [
     Item(headerValue: 'miss_chat'.tr, expandedValue: 'miss_chat_content'.tr),
     Item(
@@ -36,13 +33,11 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
   @override
   void initState() {
     super.initState();
-    myBanner.load();
     // _showInterstitialAd();
   }
 
   @override
   void dispose() {
-    myBanner.dispose();
     super.dispose();
   }
 
@@ -92,12 +87,7 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        alignment: Alignment.center,
-        width: myBanner.size.width.toDouble(),
-        height: myBanner.size.height.toDouble(),
-        child: AdWidget(ad: myBanner),
-      ),
+      bottomNavigationBar: MyBannerAd(adUnitId: AdMobService.faqBannerID ?? ''),
     );
   }
 }

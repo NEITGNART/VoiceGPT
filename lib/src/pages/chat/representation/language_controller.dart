@@ -26,10 +26,9 @@
 // Tiếng Nag
 // ru-RU-DmitryNeural
 
-import 'package:chatgpt/utils/constants.dart';
+import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../network/admob_service_helper.dart';
@@ -125,17 +124,13 @@ class AIVoice extends StatefulWidget {
 }
 
 class _AIVoiceState extends State<AIVoice> {
-  final BannerAd myBanner = createBannerAds(AdMobService.voiceBannerId ?? '');
-
   @override
   void initState() {
     super.initState();
-    myBanner.load();
   }
 
   @override
   void dispose() {
-    myBanner.dispose();
     super.dispose();
   }
 
@@ -227,12 +222,8 @@ class _AIVoiceState extends State<AIVoice> {
           },
         ],
       ),
-      bottomNavigationBar: Container(
-        alignment: Alignment.center,
-        width: myBanner.size.width.toDouble(),
-        height: myBanner.size.height.toDouble(),
-        child: AdWidget(ad: myBanner),
-      ),
+      bottomNavigationBar:
+          MyBannerAd(adUnitId: AdMobService.voiceBannerId ?? ''),
     );
   }
 }

@@ -1,45 +1,46 @@
 {
   "project_info": {
-    "project_number": "974025291344",
-    "project_id": "bard-gpt",
-    "storage_bucket": "bard-gpt.appspot.com"
+    "project_number": "322854016771",
+    "project_id": "bardgpt-super-ai-chatbot-cfe0e",
+    "storage_bucket": "bardgpt-super-ai-chatbot-cfe0e.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:974025291344:android:217aa7e7b32d3886380355",
+        "mobilesdk_app_id": "1:322854016771:android:1ddd8caa3a894200267b36",
         "android_client_info": {
           "package_name": "com.bard.chatgpt.hcmus"
         }
       },
       "oauth_client": [
         {
-          "client_id": "974025291344-kdg8a9v5nb6nk1d60uegsu2adksghvs5.apps.googleusercontent.com",
+          "client_id": "322854016771-8ugja5et7uuq1apdcvr1rvu0o50ujbvd.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAWbB_eW-TqbF2L8idnAlCtGuImo10R5GM"
+          "current_key": "AIzaSyALydtzxjejdoeQllz_lwU7RRDZPHceqvI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "974025291344-kdg8a9v5nb6nk1d60uegsu2adksghvs5.apps.googleusercontent.com",
+              "client_id": "322854016771-8ugja5et7uuq1apdcvr1rvu0o50ujbvd.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "974025291344-c0bqsa7b2l7ohvhdk6qi8tcnuadi2asg.apps.googleusercontent.com",
+              "client_id": "322854016771-7um83e0t8pkgkqdiphe29r3qr85pmiar.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.bard.chatgpt.hcmus"
+                "bundle_id": "com.bard.hcmus"
               }
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-9169867486567833~9637347480"
     }
   ],
   "configuration_version": "1"

@@ -1,7 +1,7 @@
 {
   "file_generated_by": "FlutterFire CLI",
   "purpose": "FirebaseAppID & ProjectID for this Firebase app in this directory",
-  "GOOGLE_APP_ID": "1:974025291344:ios:449064c5372ff363380355",
-  "FIREBASE_PROJECT_ID": "bard-gpt",
-  "GCM_SENDER_ID": "974025291344"
+  "GOOGLE_APP_ID": "1:322854016771:ios:d17abf2c5a0d83db267b36",
+  "FIREBASE_PROJECT_ID": "bardgpt-super-ai-chatbot-cfe0e",
+  "GCM_SENDER_ID": "322854016771"
 }

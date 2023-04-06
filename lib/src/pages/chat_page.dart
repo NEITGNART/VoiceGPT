@@ -61,7 +61,7 @@ class _ChatPageState extends State<ChatPage> {
   final Map<int, bool> soundPlayingMap = {};
   TextEditingController messageController = TextEditingController();
   bool hasOpenTemplate = false;
-  int chatLimit = 15;
+  int chatLimit = 10;
   final MoreSettingController c = Get.find<MoreSettingController>();
   final HistoryChatController historyController =
       Get.find<HistoryChatController>();
@@ -370,9 +370,7 @@ class _ChatPageState extends State<ChatPage> {
             player.pause();
             return;
           }
-
           final Directory tempDir = await getTemporaryDirectory();
-          // save audio file to temporary directory using tempDir
           final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
           // check if file exists
           final File file = File(path);

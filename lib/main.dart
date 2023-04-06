@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,17 +29,18 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize().then(
-    (InitializationStatus status) {
-      print('Initialization done: ${status.adapterStatuses}');
-      MobileAds.instance.updateRequestConfiguration(
-        RequestConfiguration(
-            tagForChildDirectedTreatment:
-                TagForChildDirectedTreatment.unspecified,
-            testDeviceIds: <String>["DE9B0A9513E3CE2D7B6688BF5E66C33B"]),
-      );
-    },
-  );
+  MobileAds.instance.initialize();
+  // .then(
+  //   (InitializationStatus status) {
+  //     print('Initialization done: ${status.adapterStatuses}');
+  //     MobileAds.instance.updateRequestConfiguration(
+  //       RequestConfiguration(
+  //           tagForChildDirectedTreatment:
+  //               TagForChildDirectedTreatment.unspecified,
+  //           testDeviceIds: <String>["DE9B0A9513E3CE2D7B6688BF5E66C33B"]),
+  //     );
+  //   },
+  // );
 
   // loading ads for this device IOS 43446e759f458bb2d73d3a66e743d6fd
   try {
@@ -59,6 +61,7 @@ void main() async {
     message.subscribeToTopic('all_users');
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) {
+        Logger().e('A new onMessageOpenedApp event was published!');
         if (Platform.isIOS) {
           if (message.data['iosUrl'] != null) {
             Get.snackbar(
@@ -123,6 +126,7 @@ void main() async {
 
     FirebaseMessaging.onMessageOpenedApp.listen(
       (RemoteMessage message) {
+        Logger().e('A new onMessageOpenedApp event was published!');
         if (Platform.isIOS) {
           if (message.data['iosUrl'] != null) {
             launchUrlAsync(

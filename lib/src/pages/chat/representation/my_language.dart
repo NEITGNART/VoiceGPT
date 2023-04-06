@@ -1,8 +1,7 @@
-import 'package:chatgpt/utils/constants.dart';
+import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../network/admob_service_helper.dart';
@@ -15,17 +14,13 @@ class MyLanguage extends StatefulWidget {
 }
 
 class _MyLanguageState extends State<MyLanguage> {
-  final BannerAd myBanner =
-      createBannerAds(AdMobService.languageBannerId ?? '');
   @override
   void initState() {
     super.initState();
-    myBanner.load();
   }
 
   @override
   void dispose() {
-    myBanner.dispose();
     super.dispose();
   }
 
@@ -98,12 +93,8 @@ class _MyLanguageState extends State<MyLanguage> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        alignment: Alignment.center,
-        width: myBanner.size.width.toDouble(),
-        height: myBanner.size.height.toDouble(),
-        child: AdWidget(ad: myBanner),
-      ),
+      bottomNavigationBar:
+          MyBannerAd(adUnitId: AdMobService.languageBannerId ?? ''),
     );
   }
 }

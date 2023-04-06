@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CLIENT_ID</key>
-	<string>974025291344-gkd45d40d55nu0ik26c75jh2m7rogegp.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.974025291344-gkd45d40d55nu0ik26c75jh2m7rogegp</string>
-	<key>API_KEY</key>
-	<string>AIzaSyCxNOIapa_5S0LC3GAYVMxqrvhYimQUdvw</string>
-	<key>GCM_SENDER_ID</key>
-	<string>974025291344</string>
-	<key>PLIST_VERSION</key>
-	<string>1</string>
-	<key>BUNDLE_ID</key>
-	<string>com.bard.hcmus</string>
-	<key>PROJECT_ID</key>
-	<string>bard-gpt</string>
-	<key>STORAGE_BUCKET</key>
-	<string>bard-gpt.appspot.com</string>
-	<key>IS_ADS_ENABLED</key>
-	<false></false>
-	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
-	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
-	<key>IS_GCM_ENABLED</key>
-	<true></true>
-	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
-	<key>GOOGLE_APP_ID</key>
-	<string>1:974025291344:ios:f4e059d71b0f743e380355</string>
-</dict>
+	<dict>
+		<key>CLIENT_ID</key>
+		<string>322854016771-7um83e0t8pkgkqdiphe29r3qr85pmiar.apps.googleusercontent.com</string>
+		<key>REVERSED_CLIENT_ID</key>
+		<string>com.googleusercontent.apps.322854016771-7um83e0t8pkgkqdiphe29r3qr85pmiar</string>
+		<key>API_KEY</key>
+		<string>AIzaSyCQj6oUIsoqhp8Cf3AqZp4VwR8EwW9F3R4</string>
+		<key>GCM_SENDER_ID</key>
+		<string>322854016771</string>
+		<key>PLIST_VERSION</key>
+		<string>1</string>
+		<key>BUNDLE_ID</key>
+		<string>com.bard.hcmus</string>
+		<key>PROJECT_ID</key>
+		<string>bardgpt-super-ai-chatbot-cfe0e</string>
+		<key>STORAGE_BUCKET</key>
+		<string>bardgpt-super-ai-chatbot-cfe0e.appspot.com</string>
+		<key>IS_ADS_ENABLED</key>
+		<false></false>
+		<key>IS_ANALYTICS_ENABLED</key>
+		<false></false>
+		<key>IS_APPINVITE_ENABLED</key>
+		<true></true>
+		<key>IS_GCM_ENABLED</key>
+		<true></true>
+		<key>IS_SIGNIN_ENABLED</key>
+		<true></true>
+		<key>GOOGLE_APP_ID</key>
+		<string>1:322854016771:ios:d17abf2c5a0d83db267b36</string>
+	</dict>
 </plist>

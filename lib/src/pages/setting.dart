@@ -1,13 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/common/constants.dart';
+import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:chatgpt/src/pages/chat/my_reuse_text.dart';
 import 'package:chatgpt/src/pages/chat/representation/language_controller.dart';
 import 'package:chatgpt/src/pages/history/representation/my_history_chat.dart';
-import 'package:chatgpt/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,20 +31,15 @@ class _SettingPageState extends State<SettingPage> {
   late stt.SpeechToText _speech;
   late SharedPreferences sp;
 
-  final BannerAd myBanner = createBannerAds(AdMobService.settingBannerID ?? '');
-
   @override
   void initState() {
     super.initState();
-    myBanner.load();
     _speech = Get.find<stt.SpeechToText>();
     sp = Get.find<SharedPreferences>();
-    myBanner.load();
   }
 
   @override
   void dispose() {
-    myBanner.dispose();
     super.dispose();
   }
 
@@ -541,12 +535,8 @@ class _SettingPageState extends State<SettingPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        alignment: Alignment.center,
-        width: myBanner.size.width.toDouble(),
-        height: myBanner.size.height.toDouble(),
-        child: AdWidget(ad: myBanner),
-      ),
+      bottomNavigationBar:
+          MyBannerAd(adUnitId: AdMobService.settingBannerID ?? ''),
     );
   }
 }
