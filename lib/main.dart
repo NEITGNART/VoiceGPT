@@ -28,14 +28,26 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+  MobileAds.instance.initialize().then(
+    (InitializationStatus status) {
+      print('Initialization done: ${status.adapterStatuses}');
+      MobileAds.instance.updateRequestConfiguration(
+        RequestConfiguration(
+            tagForChildDirectedTreatment:
+                TagForChildDirectedTreatment.unspecified,
+            testDeviceIds: <String>["DE9B0A9513E3CE2D7B6688BF5E66C33B"]),
+      );
+    },
+  );
 
+  // loading ads for this device IOS 43446e759f458bb2d73d3a66e743d6fd
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
 
     final message = FirebaseMessaging.instance;
+
     if (Platform.isIOS) {
       await message.requestPermission(
         alert: true,
@@ -43,38 +55,99 @@ void main() async {
         sound: true,
       );
     }
+
     message.subscribeToTopic('all_users');
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.data['url'] != null) {
-        Get.snackbar(
-          message.notification?.title ?? '',
-          message.notification?.body ?? '',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.white,
-          colorText: Colors.black,
-          margin: const EdgeInsets.all(10),
-          borderRadius: 10,
-          duration: const Duration(seconds: 10),
-          onTap: (snack) {
+    FirebaseMessaging.onMessage.listen(
+      (RemoteMessage message) {
+        if (Platform.isIOS) {
+          if (message.data['iosUrl'] != null) {
+            Get.snackbar(
+              message.notification?.title ?? '',
+              message.notification?.body ?? '',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.white,
+              colorText: Colors.black,
+              margin: const EdgeInsets.all(10),
+              borderRadius: 10,
+              duration: const Duration(seconds: 10),
+              onTap: (snack) {
+                launchUrlAsync(
+                  Uri.parse(
+                    '${message.data['iosUrl']}}',
+                  ),
+                );
+              },
+            );
+          }
+        } else {
+          if (message.data['androidUrl'] != null) {
+            Get.snackbar(
+              message.notification?.title ?? '',
+              message.notification?.body ?? '',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.white,
+              colorText: Colors.black,
+              margin: const EdgeInsets.all(10),
+              borderRadius: 10,
+              duration: const Duration(seconds: 10),
+              onTap: (snack) {
+                launchUrlAsync(
+                  Uri.parse(
+                    '${message.data['androidUrl']}}',
+                  ),
+                );
+              },
+            );
+          } else if (message.data['url'] != null) {
+            Get.snackbar(
+              message.notification?.title ?? '',
+              message.notification?.body ?? '',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.white,
+              colorText: Colors.black,
+              margin: const EdgeInsets.all(10),
+              borderRadius: 10,
+              duration: const Duration(seconds: 10),
+              onTap: (snack) {
+                launchUrlAsync(
+                  Uri.parse(
+                    '${message.data['androidUrl']}}',
+                  ),
+                );
+              },
+            );
+          }
+        }
+      },
+    );
+
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (RemoteMessage message) {
+        if (Platform.isIOS) {
+          if (message.data['iosUrl'] != null) {
+            launchUrlAsync(
+              Uri.parse(
+                '${message.data['iosUrl']}}',
+              ),
+            );
+          }
+        } else {
+          if (message.data['androidUrl'] != null) {
+            launchUrlAsync(
+              Uri.parse(
+                '${message.data['androidUrl']}}',
+              ),
+            );
+          } else if (message.data['url'] != null) {
             launchUrlAsync(
               Uri.parse(
                 '${message.data['url']}}',
               ),
             );
-          },
-        );
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (message.data['url'] != null) {
-        launchUrlAsync(
-          Uri.parse(
-            '${message.data['url']}}',
-          ),
-        );
-      }
-    });
+          }
+        }
+      },
+    );
   } catch (e) {
     // TOdo
   }

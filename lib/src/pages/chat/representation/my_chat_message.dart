@@ -41,16 +41,21 @@ class ChatWidget extends StatelessWidget {
                     FlutterClipboard.copy(text).then((value) => {
                           Get.snackbar(
                             'copied'.tr,
-                            '',
+                            'success'.tr,
                             snackPosition: SnackPosition.BOTTOM,
-                            colorText: Colors.blue,
+                            colorText: Colors.green,
                             margin: const EdgeInsets.all(10),
                             borderRadius: 10,
                             duration: const Duration(seconds: 2),
                           )
                         });
                   },
-                )
+                ),
+                // gapH4,
+                // GestureDetector(
+                //   child: const Icon(Icons.reply),
+                //   onTap: () {},
+                // )
               ],
             )
           }

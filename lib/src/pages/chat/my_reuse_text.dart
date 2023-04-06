@@ -4,6 +4,7 @@ import 'package:chatgpt/src/pages/chat/repository/template.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyTextReuse extends StatefulWidget {
   const MyTextReuse({super.key});
@@ -309,6 +310,18 @@ class MyTemplateList extends StatelessWidget {
                   'assets/images/empty.png',
                 ),
                 Text('no_template'.tr, style: kTitle2Style),
+                gapH12,
+                ElevatedButton(
+                  onPressed: () async {
+                    await launchUrl(
+                      Uri.parse(
+                        'https://youtu.be/dgFTjSw-oQU',
+                      ),
+                      mode: LaunchMode.externalApplication,
+                    );
+                  },
+                  child: Text('tutorial'.tr),
+                )
               ],
             ),
           );

@@ -4,8 +4,17 @@ class Languages extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'vi_VN': {
+          'miss_chat': 'Tin nhắn trả về bị thiếu',
+          'chat_limit_title': 'Thông báo',
+          'chat_limit_content':
+              'Nhấn vào biểu tượng bên phải để nhận thêm 30 lượt nhắn. Hoặc bạn có thể tạo lượt nhắn mới',
+          'miss_chat_content':
+              'Nhắn với chat từ "tiếp tục" để tiếp tục trò chuyện',
+          'chat_history': 'Lịch sử nhắn tin',
+          'empty_chat': 'Chưa có tin nhắn nào, hãy vào trò chuyện với AI ngay!',
+          'auto_save': 'Tự động lưu tin nhắn',
           'service_err':
-              'Hệ thống có vấn đề, vui lòng lại lời nhắn!. Xin lỗi vì sự bất tiện này!',
+              'Hệ thống gặp sự cố, vui lòng gửi lại lời nhắn!. Xin lỗi vì sự bất tiện này!',
           'greeting': 'Xin chào',
           'setting': 'Cài đặt ứng dụng',
           'language': 'Ngôn ngữ',
@@ -14,9 +23,9 @@ class Languages extends Translations {
           'voiceName': 'vi-VN-HoaiMyNeural',
           'currentLanguage': 'Tiếng Việt',
           'hint': 'Gõ hoặc dùng giọng nói',
-          'botname': 'Trợ lý ảo BardGPT',
+          'botname': 'Tin nhắn mới',
           'welcome': 'Chào bạn, tôi là BardGPT',
-          'nav_chat': 'Nhắn tin',
+          'nav_chat': 'Nhắn tin với AI',
           'contact': 'Liên lạc',
           'waiting': 'Tin nhắn đang được tải về...',
           'autoVoice': 'Tự động phát âm',
@@ -44,7 +53,7 @@ class Languages extends Translations {
               'Bạn có thể nhắn tin với BardGPT bằng cách gõ hoặc dùng giọng nói và nhắn với bất kỳ người nào khác',
           'thanks_title': 'Lời cảm ơn',
           'thanks':
-              'Cảm ơn bạn đã sử dụng BardGPT. Với mong muốn đem lại những trải nghiệm tốt nhất cho bạn, chúng tôi rất mong nhận được những đánh giá của bạn để cải thiện ứng dụng. Hiện tại app đang duy trì bằng quảng cáo, vậy nên hy vọng những trải này không làm phiền bạn quá nhiều.',
+              'Cảm ơn bạn đã sử dụng BardGPT. Với mong muốn đem lại những trải nghiệm tốt nhất cho bạn, chúng tôi rất mong nhận được những đánh giá của bạn để cải thiện ứng dụng. Hiện tại app đang duy trì bằng quảng cáo, vậy nên hy vọng những trải này không làm phiền bạn quá nhiều. Cảm ơn thầy Phạm Hoàng Hải và các thầy cô trường KHTN đã giúp em tạo ra project này và đăng lên trên store.',
           'intro_1': 'Trò chuyện với trí tuệ nhân tạo',
           'intro_1_content':
               'Hãy trò chuyện với trí tuệ nhân tạo và nhận câu trả lời cho các câu hỏi của bạn. Với mọi ngoại ngôn ngữ',
@@ -64,7 +73,7 @@ class Languages extends Translations {
           'skip': 'Bỏ qua',
           'done': 'Hoàn thành',
           'intro': 'Giới thiệu',
-          'note': 'Lưu ý',
+          'note': 'Câu hỏi thường gặp',
           'sound_error':
               'Hiện tại không thể phát âm, chúng tôi sẽ khắc phục sớm nhất có thể. Vui lòng thử lại sau',
           'sound_title': 'Giọng đọc AI',
@@ -82,18 +91,43 @@ class Languages extends Translations {
           'content_hint': 'Nhập nội dung',
           'upd_template': 'Cập nhật bản mẫu',
           'del_all_template': 'Xóa tất cả bản mẫu',
+          'del_all_chat': 'Xóa tất cả tin nhắn',
           'del_all_content':
               'Khi bấm xóa tất cả, bạn sẽ không thể khôi phục lại',
           'cancel': 'Hủy',
           'del': 'Xóa',
           'success': 'Thành công',
+          'go_chat': 'Chat sẽ được chuyển tới trong 2 giây',
           'edit': 'Chỉnh sửa',
+          'store_chat_title': 'Lưu cuộc hội thoại chat',
+          'txt_reuse_content':
+              'Bạn có thể lưu lại các tin nhắn để sử dụng lại sau này. Hãy vào phần tin nhắn nhanh, tạo bản mẫu. Đặt tên tiều đề (ngắn gọn) và nội dung. Sau đó bạn có thể gửi tin nhắn bằng cách bấm vào nút ở bên góc trái màn hình bên dưới cạnh bàn phím để sử dụng',
+          'store_chat':
+              'Hiện tại chúng tôi đang nâng cấp tính năng này, sẽ được cập nhật ở bản sau',
           'common_error_content':
               '''-Hệ thống không khả dụng\n +Hãy thử lại mở lại ứng dụng\n-Giọng đọc không khả dụng\n +Hiện tại hệ thống chúng tôi đang nâng cấp, do đó vấn đề này sẽ được khắc phục sau(Nếu giọng nói không hoạt động xin tính năng giọng nói tự động)\n\nHãy gửi form đánh giá để chúng tôi có thể khắc phục sớm nhất có thể''',
         },
         'en_US': {
+          //       'txt_reuse_content':
+          // 'Bạn có thể lưu lại các tin nhắn để sử dụng lại sau này. Hãy vào phần tin nhắn nhanh, tạo bản mẫu. Đặt tên tiều đề (ngắn gọn) và nội dung. Sau đó bạn có thể gửi tin nhắn bằng cách bấm vào nút ở bên góc trái màn hình bên dưới cạnh bàn phím để sử dụng',
+
+          'chat_limit_title': 'Notification',
+          'chat_limit_content':
+              'Tap the icon on the right to get 30 more messages. Or you can create a new chat',
+          'miss_chat': 'Miss chat',
+          'miss_chat_content': 'Typing "continue" to continue the conversation',
+          'chat_history': 'History',
+          'del_all_chat': 'Delete all chat',
+          'empty_chat': 'No chat history',
+          'auto_save': 'Auto save chat',
+          'txt_reuse_content':
+              'You can save messages to reuse later. Go to the quick message section, create a template. Set the title (short) and content. Then you can send a message by pressing the button on the left side of the screen below the keyboard to use',
+          'store_chat_title': 'Store chat',
+          'store_chat':
+              'We are upgrading this feature, it will be updated in the next version',
+          'go_chat': 'Chat will be redirected in 2 second',
           'service_err':
-              'Service service, please try again!. Sorry for the inconvenience',
+              'Service now is in high demand, please try again!. Sorry for the inconvenience',
           'intro_6': 'Create templates to save time when sending messages',
           'del_all_template': 'Delete all templates',
           'del_all_content':
@@ -122,9 +156,9 @@ class Languages extends Translations {
           'voiceName': 'en-US-AriaNeural',
           'currentLanguage': 'English',
           'hint': 'Type or Press the Mic',
-          'botname': 'Super Bard Bot',
+          'botname': 'New Chat',
           'welcome': 'Welcome to BardGPT',
-          'nav_chat': 'Chat with BardGPT',
+          'nav_chat': 'Chat with AI',
           'contact': 'Contact',
           'waiting': 'Waiting for response...',
           'autoVoice': 'Auto Voice',
@@ -151,7 +185,7 @@ class Languages extends Translations {
               'You can chat with BardGPT by typing or using voice and chat with anyone else.',
           'thanks_title': 'Acknowledgement',
           'thanks':
-              'Thank you for using BardGPT. With the desire to bring you the best experience, we hope to receive your feedback to improve the app. Currently, the app is maintained by advertising, so we hope that these experiences do not bother you too much.',
+              'Thank you for using BardGPT. With the desire to bring you the best experience, we hope to receive your feedback to improve the app. Currently, the app is maintained by advertising, so we hope that these experiences do not bother you too much. And finally, I want to thank my teacher, Phạm Hoàng Hải at HCMUS for his support and guidance. Thank you!',
           'intro_1': 'Chat with AI',
           'intro_1_content':
               "Let's chat with AI and get answers to your questions with any languages",
@@ -169,7 +203,7 @@ class Languages extends Translations {
           'skip': 'Skip',
           'done': 'Done',
           'intro': 'Introduction ',
-          'note': 'Common Issues',
+          'note': 'FAQs',
           'copied': 'Copied',
           'sound_title': 'Voice AI',
           'sound_error':

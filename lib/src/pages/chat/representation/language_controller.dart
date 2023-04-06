@@ -26,11 +26,16 @@
 // Tiếng Nag
 // ru-RU-DmitryNeural
 
+import 'package:chatgpt/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../network/admob_service_helper.dart';
+
 final Map<String, String> flags = {
+  'en-US-JasonNeural': 'assets/images/english.png',
   'en-US-AriaNeural': 'assets/images/english.png',
   'vi-VN-HoaiMyNeural': 'assets/images/vietnam.png',
   'ja-JP-MayuNeural': 'assets/images/japan.png',
@@ -43,7 +48,8 @@ final Map<String, String> flags = {
 };
 
 final Map<String, String> engLanguage = {
-  'English': 'en-US-AriaNeural',
+  'English (Male)': 'en-US-JasonNeural',
+  'English (Female)': 'en-US-AriaNeural',
   'Japanese': 'ja-JP-MayuNeural',
   'Chinese': 'zh-HK-HiuGaaiNeural',
   'French': 'fr-FR-DeniseNeural',
@@ -55,7 +61,8 @@ final Map<String, String> engLanguage = {
 };
 
 final Map<String, String> vnLanguage = {
-  'Tiếng Anh': 'en-US-AriaNeural',
+  'Tiếng Anh (Nam)': 'en-US-JasonNeural',
+  'Tiếng Anh (Nữ)': 'en-US-AriaNeural',
   'Tiếng Nhật': 'ja-JP-MayuNeural',
   'Tiếng Trung': 'zh-HK-HiuGaaiNeural',
   'Tiếng Pháp': 'fr-FR-DeniseNeural',
@@ -68,7 +75,7 @@ final Map<String, String> vnLanguage = {
 
 class LanguageController extends GetxController {
   var language = 'English'.obs;
-  var voiceName = 'en-US-AriaNeural'.obs;
+  var voiceName = 'en-US-JasonNeural'.obs;
 
   void changeLanguage(String lang) {
     language.value = lang;
@@ -101,7 +108,7 @@ Future<void> saveLanguageCode(String languageCode, String languageName) async {
 Future<String> getLanguageCode() async {
   final prefs = Get.find<SharedPreferences>();
   return prefs.getString(Constant.voiceAILanguageCode.name) ??
-      'en-US-AriaNeural';
+      'en-US-JasonNeural';
 }
 
 // get language name
@@ -110,8 +117,27 @@ Future<String> getLanguageName() async {
   return prefs.getString(Constant.voiceAILanguageName.name) ?? 'English';
 }
 
-class AIVoice extends StatelessWidget {
+class AIVoice extends StatefulWidget {
   const AIVoice({super.key});
+
+  @override
+  State<AIVoice> createState() => _AIVoiceState();
+}
+
+class _AIVoiceState extends State<AIVoice> {
+  final BannerAd myBanner = createBannerAds(AdMobService.voiceBannerId ?? '');
+
+  @override
+  void initState() {
+    super.initState();
+    myBanner.load();
+  }
+
+  @override
+  void dispose() {
+    myBanner.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,8 +224,14 @@ class AIVoice extends StatelessWidget {
                   },
                   itemCount: engLanguage.length),
             ),
-          }
+          },
         ],
+      ),
+      bottomNavigationBar: Container(
+        alignment: Alignment.center,
+        width: myBanner.size.width.toDouble(),
+        height: myBanner.size.height.toDouble(),
+        child: AdWidget(ad: myBanner),
       ),
     );
   }

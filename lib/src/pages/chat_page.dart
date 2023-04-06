@@ -6,10 +6,15 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart' as audio;
 import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
-import 'package:chatgpt/models/model.dart';
+import 'package:chatgpt/network/admob_service_helper.dart';
+import 'package:chatgpt/src/pages/history/model/chat_adapter.dart';
 import 'package:chatgpt/src/pages/home_page.dart';
+import 'package:chatgpt/src/pages/setting/representation/controller.dart';
+import 'package:chatgpt/src/pages/setting/representation/my_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -19,11 +24,9 @@ import '../../models/chat.dart';
 import '../../network/api_services.dart';
 import '../chat/presentation/audio_waves.dart';
 import 'chat/my_reuse_text.dart';
-import 'chat/repository/template.dart';
 import 'chat/representation/my_arrow_icon.dart';
 import 'chat/representation/my_chat_message.dart';
-
-// import ENUM  PLAYERSTATE from audioplayer
+import 'chat/representation/my_template_list.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -42,9 +45,7 @@ class Template {
 
 class _ChatPageState extends State<ChatPage> {
   String messagePrompt = '';
-  int tokenValue = 500;
   List<Chat> chatList = [];
-  List<Model> modelsList = [];
   late SharedPreferences prefs;
   bool isPlayingSound = false;
   ChatRepository chatRepository = ChatRepositoryImpl();
@@ -54,51 +55,68 @@ class _ChatPageState extends State<ChatPage> {
   final ScrollController _scrollController = ScrollController();
   late final audio.AudioPlayer player = audio.AudioPlayer();
   String? _currentLocaleId;
-  bool isDebounce = true;
-  String conversationId = '';
+  String conversationId = '${DateTime.now().millisecondsSinceEpoch}';
   String parentMessageId = '';
   int soundPlayingIndex = -1;
   final Map<int, bool> soundPlayingMap = {};
   TextEditingController messageController = TextEditingController();
   bool hasOpenTemplate = false;
+  int chatLimit = 15;
+  final MoreSettingController c = Get.find<MoreSettingController>();
+  final HistoryChatController historyController =
+      Get.find<HistoryChatController>();
 
-  late bool isAutoPlaying;
+  RewardedAd? _rewardAd;
 
   @override
   void initState() {
     super.initState();
     initPrefs();
+    _createRewardedAd();
+
     _speech = Get.find<stt.SpeechToText>();
     soundPlayingMap[soundPlayingIndex] = false;
-
-    _assetsAudioPlayer.playlistFinished.listen((finished) {
-      if (finished) {
-        if (mounted) {
-          setState(() {
-            soundPlayingMap[soundPlayingIndex] = false;
-          });
+    _assetsAudioPlayer.playlistFinished.listen(
+      (finished) {
+        if (finished) {
+          if (mounted) {
+            setState(
+              () {
+                soundPlayingMap[soundPlayingIndex] = false;
+              },
+            );
+          }
         }
-      }
-    });
+      },
+    );
 
-    player.onPlayerStateChanged.listen((audio.PlayerState s) {
-      if (s == audio.PlayerState.stopped ||
-          s == audio.PlayerState.paused ||
-          s == audio.PlayerState.completed) {
-        if (mounted) {
-          setState(() {
-            soundPlayingMap[soundPlayingIndex] = false;
-          });
+    player.onPlayerStateChanged.listen(
+      (audio.PlayerState s) {
+        if (s == audio.PlayerState.stopped ||
+            s == audio.PlayerState.paused ||
+            s == audio.PlayerState.completed) {
+          if (mounted) {
+            setState(
+              () {
+                soundPlayingMap[soundPlayingIndex] = false;
+              },
+            );
+          }
         }
-      }
-    });
-    player.onPlayerComplete.listen((event) {
-      if (mounted) {
-        setState(() {
-          soundPlayingMap[soundPlayingIndex] = false;
-        });
-      }
-    });
+      },
+    );
+
+    player.onPlayerComplete.listen(
+      (event) {
+        if (mounted) {
+          setState(
+            () {
+              soundPlayingMap[soundPlayingIndex] = false;
+            },
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -107,15 +125,54 @@ class _ChatPageState extends State<ChatPage> {
     _assetsAudioPlayer.dispose();
     _scrollController.dispose();
     messageController.dispose();
+    _rewardAd?.dispose();
     super.dispose();
   }
 
   void initPrefs() {
     prefs = Get.find<SharedPreferences>();
-    isAutoPlaying = prefs.getBool('isAutoPlay') ?? false;
     _currentLocaleId = prefs.getString('localeId');
-    // debugPrint("_currentLocaleId: $_currentLocaleId");
     setState(() {});
+  }
+
+  void _createRewardedAd() {
+    RewardedAd.load(
+      adUnitId: AdMobService.chatRewardId!,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (RewardedAd ad) {
+          _rewardAd = ad;
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          setState(() {
+            chatLimit = 20;
+          });
+        },
+      ),
+    );
+  }
+
+  void _showRewardAd() {
+    if (_rewardAd != null) {
+      _rewardAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          _createRewardedAd();
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          ad.dispose();
+          _createRewardedAd();
+        },
+      );
+      _rewardAd!.show(
+        onUserEarnedReward: (ad, reward) => setState(
+          () {
+            chatLimit += reward.amount.toInt();
+          },
+        ),
+      );
+      _rewardAd = null;
+    }
   }
 
   @override
@@ -128,14 +185,14 @@ class _ChatPageState extends State<ChatPage> {
           onPressed: () {
             player.dispose();
             _assetsAudioPlayer.dispose();
-            // left
-            Get.offAll(
-              const HomePage(),
-              transition: Transition.rightToLeft,
+            _rewardAd?.dispose();
+            Get.off(
+              () => const HomePage(),
             );
           },
         ),
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const CircleAvatar(
               radius: 20,
@@ -145,9 +202,14 @@ class _ChatPageState extends State<ChatPage> {
             Text('botname'.tr),
           ],
         ),
-        // actions: [
-        //   MySetting(),
-        // ],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert_outlined),
+            onPressed: () {
+              Get.to(() => const MySetting());
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -213,14 +275,8 @@ class _ChatPageState extends State<ChatPage> {
                             : const Color(0xFFEBF5FF),
                         borderRadius: chat == 0
                             ? const BorderRadius.all(Radius.circular(20))
-                            : const BorderRadius.all(Radius.circular(20))
-                        //  : const BorderRadius.only(
-                        //     topLeft: Radius.circular(20),
-                        //     topRight: Radius.circular(20),
-                        //     bottomRight: Radius.circular(20),
-                        //   ),
-                        ),
-                    child: Text(message,
+                            : const BorderRadius.all(Radius.circular(20))),
+                    child: SelectableText(message,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -254,13 +310,7 @@ class _ChatPageState extends State<ChatPage> {
                           decoration: const BoxDecoration(
                               color: Color(0xFFEBF5FF),
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(20))
-                              //  : const BorderRadius.only(
-                              //     topLeft: Radius.circular(20),
-                              //     topRight: Radius.circular(20),
-                              //     bottomRight: Radius.circular(20),
-                              //   ),
-                              ),
+                                  BorderRadius.all(Radius.circular(20))),
                           child: SizedBox(
                               width: MediaQuery.of(context).size.width * 0.7,
                               child: ChatWidget(isMe: false, text: message)),
@@ -326,37 +376,43 @@ class _ChatPageState extends State<ChatPage> {
           final String path = "${tempDir.path}/synthesized_audio_$id.mp3";
           // check if file exists
           final File file = File(path);
-          file.exists().then((value) async {
-            if (value) {
-              await _assetsAudioPlayer.open(
-                Audio.file(path),
-                // pause
-              );
-            } else {
-              if (mounted) {
-                try {
-                  if (message.length > 400) {
-                    Get.snackbar('message_title'.tr, 'message_long'.tr,
-                        snackPosition: SnackPosition.BOTTOM,
-                        duration: 3.seconds);
+          file.exists().then(
+            (value) async {
+              if (value) {
+                await _assetsAudioPlayer.open(
+                  Audio.file(path),
+                  // pause
+                );
+              } else {
+                if (mounted) {
+                  try {
+                    if (message.length > 400) {
+                      Get.snackbar('message_title'.tr, 'message_long'.tr,
+                          snackPosition: SnackPosition.BOTTOM,
+                          duration: 3.seconds);
+                    }
+                    final audioBytes = await synthesizeSpeech(message);
+                    if (Platform.isIOS) {
+                      if (mounted) {
+                        await file.writeAsBytes(audioBytes);
+                        await _assetsAudioPlayer.open(
+                          Audio.file(path),
+                        );
+                      }
+                    } else {
+                      if (mounted) {
+                        final byteSouce = audio.BytesSource(audioBytes);
+                        await player.play(byteSouce);
+                        await file.writeAsBytes(audioBytes);
+                      }
+                    }
+                  } catch (e) {
+                    rethrow;
                   }
-                  final audioBytes = await synthesizeSpeech(message);
-                  if (Platform.isIOS) {
-                    await file.writeAsBytes(audioBytes);
-                    await _assetsAudioPlayer.open(
-                      Audio.file(path),
-                    );
-                  } else {
-                    final byteSouce = audio.BytesSource(audioBytes);
-                    await player.play(byteSouce);
-                    await file.writeAsBytes(audioBytes);
-                  }
-                } catch (e) {
-                  rethrow;
                 }
               }
-            }
-          });
+            },
+          );
         }
       } catch (e) {
         Get.snackbar('sound_title'.tr, 'sound_error'.tr,
@@ -398,26 +454,26 @@ class _ChatPageState extends State<ChatPage> {
                       null,
                   // display scroll on keyboard on the right
                   autocorrect: true,
+                  autofocus: true,
                   maxLength: textLimit,
                   // focus on the textfield
                   onChanged: (value) {
-                    setState(() {
-                      if (value.length == textLimit) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            duration: const Duration(milliseconds: 500),
-                            content: Text(
-                              'longMessage'.tr,
-                              style: const TextStyle(color: Colors.white),
+                    setState(
+                      () {
+                        if (value.length == textLimit) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(milliseconds: 500),
+                              content: Text(
+                                'longMessage'.tr,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                              backgroundColor: Colors.red,
                             ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                      // move the cursor to the end of the textfield
-                      messageController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: messageController.text.length));
-                    });
+                          );
+                        }
+                      },
+                    );
                   },
                   // croll if the textfield is overflow
                   maxLines: 4,
@@ -454,7 +510,8 @@ class _ChatPageState extends State<ChatPage> {
               ),
               //  messageController.text.isNotEmpty
 
-              if (!_isListening && messageController.text.isEmpty) ...{
+              if (chatLimit > 0 &&
+                  (!_isListening && messageController.text.isEmpty)) ...{
                 if (soundPlayingMap[soundPlayingIndex] == false)
                   InkWell(
                     onTap: () {
@@ -480,7 +537,23 @@ class _ChatPageState extends State<ChatPage> {
               // const Expanded(child: FlowMenu()),
               // adding animation to the send button
 
-              if (messageController.text.isNotEmpty || _isListening)
+              if (chatLimit <= 0) ...{
+                Center(
+                  child: IconButton(
+                    onPressed: () {
+                      _showRewardAd();
+                    },
+                    icon: const Icon(
+                      Icons.whatshot_outlined,
+                      color: Colors.blue,
+                      size: 35,
+                    ),
+                  ),
+                )
+              },
+
+              if (chatLimit > 0 &&
+                  (messageController.text.isNotEmpty || _isListening))
                 InkWell(
                   child: Column(
                     children: [
@@ -514,6 +587,16 @@ class _ChatPageState extends State<ChatPage> {
                       },
                       InkWell(
                         onTap: (() async {
+                          Logger().e('chatLimit $chatLimit');
+                          if (chatLimit <= 1) {
+                            Get.snackbar(
+                                'chat_limit_title'.tr, 'chat_limit_content'.tr,
+                                snackPosition: SnackPosition.BOTTOM,
+                                duration: 5.seconds);
+                          }
+                          if (chatLimit <= 0) {
+                            return;
+                          }
                           messagePrompt = messageController.text.toString();
                           _speech.cancel();
                           _isListening = false;
@@ -525,12 +608,17 @@ class _ChatPageState extends State<ChatPage> {
                               chat: 0,
                               // timestemp for file
                               id: '${DateTime.now().millisecondsSinceEpoch}'));
+
                           chatList.add(Chat(
                               msg: '',
                               chat: 1,
                               id: '${DateTime.now().millisecondsSinceEpoch}'));
 
                           int n = chatList.length;
+
+                          if (c.isAutoSaveChatValue) {
+                            historyController.addChat(chatList[n - 2]);
+                          }
 
                           soundPlayingMap[n - 1] = false;
                           soundPlayingMap[n - 2] = false;
@@ -544,12 +632,6 @@ class _ChatPageState extends State<ChatPage> {
                             );
                           });
 
-                          // var submitGetChatsForm2 = await submitGetChatsForm(
-                          //   context: context,
-                          //   prompt: messagePrompt,
-                          //   tokenValue: tokenValue,
-                          // );
-
                           // set to chatList item at index n-1
                           try {
                             final reponse = await chatRepository.send(
@@ -562,17 +644,20 @@ class _ChatPageState extends State<ChatPage> {
                             conversationId = reponse?.conversationId ?? "";
                             parentMessageId = reponse?.parentMessageId ?? "";
 
-                            chatList[n - 1] = Chat(
-                                msg: reponse?.text ??
-                                    "Sorry, service is temporary unavailable",
+                            final result = Chat(
+                                msg: reponse?.text ?? 'service_err'.tr,
                                 chat: 1,
                                 id: parentMessageId);
+                            chatList[n - 1] = result;
 
-                            if (isAutoPlaying == true) {
+                            if (c.isAutoSaveChatValue) {
+                              historyController.addChat(result);
+                            }
+
+                            if (c.isAutoPlayValue) {
                               try {
                                 await playSound(
-                                    reponse?.text ??
-                                        "Sorry, service is temporary unavailable",
+                                    reponse?.text ?? 'service_err'.tr,
                                     parentMessageId,
                                     n - 1);
                               } catch (e) {
@@ -581,7 +666,7 @@ class _ChatPageState extends State<ChatPage> {
                             }
                           } catch (e) {
                             chatList[n - 1] = Chat(
-                                msg: "Sorry, service is temporary unavailable",
+                                msg: 'service_err'.tr,
                                 chat: 1,
                                 id: parentMessageId);
                           }
@@ -594,6 +679,11 @@ class _ChatPageState extends State<ChatPage> {
                                 curve: Curves.easeOut,
                               );
                             });
+                          }
+
+                          chatLimit -= 1;
+                          if (mounted) {
+                            setState(() {});
                           }
                         }),
                         child: Container(
@@ -640,7 +730,7 @@ class _ChatPageState extends State<ChatPage> {
                       // icon +
                       GestureDetector(
                         onTap: () {
-                          Get.to(const MyTextReuse());
+                          Get.to(() => const MyTextReuse());
                         },
                         child: const Icon(
                           Icons.add,
@@ -685,159 +775,3 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 }
-
-class TemplateList extends StatelessWidget {
-  final TemplateController templateController = Get.find<TemplateController>();
-  final TextEditingController messageController;
-
-  TemplateList({Key? key, required this.messageController}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      if (templateController.templates.isEmpty) {
-        return Center(
-          child: Text('no_template'.tr),
-        );
-      }
-      return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: templateController.templates.length,
-        itemBuilder: (context, i) {
-          return Container(
-            margin: const EdgeInsets.all(5),
-            child: InputChip(
-                backgroundColor: Colors.blue.shade300,
-                label: Text(templateController.templates[i].title),
-                onPressed: () {
-                  messageController.text +=
-                      templateController.templates[i].message;
-                  // point to the end of the text
-                  messageController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: messageController.text.length));
-                }),
-          );
-        },
-      );
-    });
-  }
-}
-
-
-
-
-// class FlowMenu extends StatefulWidget {
-//   const FlowMenu({super.key});
-
-//   @override
-//   State<FlowMenu> createState() => _FlowMenuState();
-// }
-
-// class _FlowMenuState extends State<FlowMenu>
-//     with SingleTickerProviderStateMixin {
-//   late AnimationController menuAnimation;
-//   IconData lastTapped = Icons.notifications;
-//   final List<IconData> menuItems = <IconData>[
-//     Icons.home,
-//     Icons.new_releases,
-//     Icons.notifications,
-//     Icons.settings,
-//     Icons.menu,
-//   ];
-
-//   void _updateMenu(IconData icon) {
-//     if (icon != Icons.menu) {
-//       setState(() => lastTapped = icon);
-//     }
-//   }
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     menuAnimation = AnimationController(
-//       duration: const Duration(milliseconds: 250),
-//       vsync: this,
-//     );
-//   }
-
-//   Widget flowMenuItem(IconData icon) {
-//     final double buttonDiameter =
-//         MediaQuery.of(context).size.width / menuItems.length;
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 8.0),
-//       child: RawMaterialButton(
-//         fillColor: lastTapped == icon ? Colors.amber[700] : Colors.blue,
-//         splashColor: Colors.amber[100],
-//         shape: const CircleBorder(),
-//         constraints: BoxConstraints.tight(Size(buttonDiameter, buttonDiameter)),
-//         onPressed: () {
-//           _updateMenu(icon);
-//           menuAnimation.status == AnimationStatus.completed
-//               ? menuAnimation.reverse()
-//               : menuAnimation.forward();
-//         },
-//         child: Icon(
-//           icon,
-//           color: Colors.white,
-//           size: 45.0,
-//         ),
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Flow(
-//       delegate: FlowMenuDelegate(menuAnimation: menuAnimation),
-//       children:
-//           menuItems.map<Widget>((IconData icon) => flowMenuItem(icon)).toList(),
-//     );
-//   }
-// }
-
-// class FlowMenuDelegate extends FlowDelegate {
-//   FlowMenuDelegate({required this.menuAnimation})
-//       : super(repaint: menuAnimation);
-
-//   final Animation<double> menuAnimation;
-
-//   @override
-//   bool shouldRepaint(FlowMenuDelegate oldDelegate) {
-//     return menuAnimation != oldDelegate.menuAnimation;
-//   }
-
-//   @override
-//   void paintChildren(FlowPaintingContext context) {
-//     double dx = 0.0;
-//     for (int i = 0; i < context.childCount; ++i) {
-//       dx = context.getChildSize(i)!.width * i;
-//       context.paintChild(
-//         i,
-//         transform: Matrix4.translationValues(
-//           dx * menuAnimation.value,
-//           0,
-//           0,
-//         ),
-//       );
-//     }
-//   }
-// }
-
-// Route _createRoute() {
-//   return PageRouteBuilder(
-//     pageBuilder: (context, animation, secondaryAnimation) =>
-//         const SettingPage(),
-//     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//       const begin = Offset(0.0, 1.0);
-//       const end = Offset.zero;
-//       const curve = Curves.ease;
-
-//       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-//       return SlideTransition(
-//         position: animation.drive(tween),
-//         child: child,
-//       );
-//     },
-//   );
-// }

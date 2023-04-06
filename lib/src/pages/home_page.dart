@@ -13,6 +13,8 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../utils/constants.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -24,41 +26,38 @@ class _HomePageState extends State<HomePage> {
   static AdRequest request = const AdRequest(nonPersonalizedAds: true);
 
   InterstitialAd? _interstitialAd;
-  int _numInterstitialLoadAttempts = 0;
-  int maxFailedLoadAttempts = 3;
+  bool _isButtonEnabled = true;
+  bool wantSmallNativeAd = false;
 
-  final BannerAd myBanner = BannerAd(
-    adUnitId: AdMobService.bannerAdUnitId ?? '',
-    size: AdSize.fullBanner,
-    request: const AdRequest(),
-    listener: const BannerAdListener(),
-  );
+  final BannerAd myBanner =
+      createBannerAds(AdMobService.mainPageBannerId ?? '');
 
   void _createInterstitialAd() {
     InterstitialAd.load(
-        adUnitId: AdMobService.interstitialAdUnitId ?? '',
-        request: request,
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (InterstitialAd ad) {
-            log('$ad loaded');
-            _interstitialAd = ad;
-            _numInterstitialLoadAttempts = 0;
-            _interstitialAd!.setImmersiveMode(true);
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            log('InterstitialAd failed to load: $error.');
-            _numInterstitialLoadAttempts += 1;
-            _interstitialAd = null;
-            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-              _createInterstitialAd();
-            }
-          },
-        ));
+      adUnitId: AdMobService.interstitialAdUnitId ?? '',
+      request: request,
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (InterstitialAd ad) {
+          log('$ad loaded');
+          _interstitialAd = ad;
+          _interstitialAd!.setImmersiveMode(true);
+        },
+        onAdFailedToLoad: (LoadAdError error) {
+          log('InterstitialAd failed to load: $error.');
+          _interstitialAd = null;
+        },
+      ),
+    );
   }
 
-  void _showInterstitialAd() {
+
+  Future<void> _showInterstitialAd() async {
     if (_interstitialAd == null) {
       log('Warning: attempt to show interstitial before loaded.');
+      // logger.e('Warning: attempt to show interstitial before loaded.');
+      Get.offAll(
+        () => const ChatPage(),
+      );
       return;
     }
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -67,15 +66,19 @@ class _HomePageState extends State<HomePage> {
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         log('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
-        _createInterstitialAd();
+        Get.off(
+          () => const ChatPage(),
+        );
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         log('$ad onAdFailedToShowFullScreenContent: $error');
         ad.dispose();
-        _createInterstitialAd();
+        Get.offAll(
+          () => const ChatPage(),
+        );
       },
     );
-    _interstitialAd!.show();
+    await _interstitialAd!.show();
     _interstitialAd = null;
   }
 
@@ -83,6 +86,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     myBanner.load();
+
     FirebaseMessaging.instance.requestPermission();
     _createInterstitialAd();
     // _showInterstitialAd();
@@ -149,36 +153,31 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // buttonWidget('Generate image idea', () {
-                //   _showInterstitialAd();
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => const DallePage(),
-                //     ),
-                //   );
-                // }),
                 buttonWidget(
                   'nav_chat'.tr,
-                  () {
-                    _showInterstitialAd();
-                    // Go to chat page and this page will be disposed
-                    Get.offAll(
-                      () => const ChatPage(),
+                  () async {
+                    if (!_isButtonEnabled) return;
+                    _isButtonEnabled = false;
+                    // wait 1 second
+                    Get.snackbar(
+                      'nav_chat'.tr,
+                      'go_chat'.tr,
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.white,
+                      colorText: Colors.black,
+                      margin: const EdgeInsets.all(20),
+                      borderRadius: 20,
+                      duration: const Duration(seconds: 1),
                     );
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const ChatPage(),
-                    //   ),
-                    // );
+                    await Future.delayed(const Duration(milliseconds: 2000));
+                    await _showInterstitialAd();
                   },
                   SvgPicture.asset('assets/chat.svg', height: 40),
                 ),
                 buttonWidget(
                   'setting'.tr,
                   () {
-                    Get.offAll(
+                    Get.off(
                       () => const SettingPage(),
                     );
                   },
@@ -187,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                 buttonWidget(
                   'suggest'.tr,
                   () {
-                    _showInterstitialAd();
+                    // _showInterstitialAd();
                     _launchUrl(
                       Uri.parse(
                         'https://forms.gle/LXmyxawkPM6az8Dq5',
@@ -200,17 +199,20 @@ class _HomePageState extends State<HomePage> {
                   'assets/hi.svg',
                   height: 300,
                 ),
+
               ],
             ),
           ),
         ),
       ),
-      bottomNavigationBar: Container(
-        alignment: Alignment.center,
-        width: myBanner.size.width.toDouble(),
-        height: myBanner.size.height.toDouble(),
-        child: AdWidget(ad: myBanner),
-      ),
+      bottomNavigationBar: myBanner == null
+          ? const SizedBox()
+          : Container(
+              alignment: Alignment.center,
+              width: myBanner.size.width.toDouble(),
+              height: myBanner.size.height.toDouble(),
+              child: AdWidget(ad: myBanner),
+            ),
     );
   }
 
@@ -258,3 +260,74 @@ class _HomePageState extends State<HomePage> {
     )) throw 'Could not launch $url';
   }
 }
+
+// class ChatMainPage extends StatefulWidget {
+//   const ChatMainPage({super.key});
+//   @override
+//   State<ChatMainPage> createState() => _ChatMainPageState();
+// }
+
+// class _ChatMainPageState extends State<ChatMainPage> {
+//   int _selectedIndex = 0;
+
+//   static final List<Widget> _widgetOptions = <Widget>[
+//     const HomePage(),
+//     const MyHistoryChat(),
+//     const SettingPage(),
+//   ];
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: _widgetOptions.elementAt(_selectedIndex),
+//       ),
+//       bottomNavigationBar: Container(
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           boxShadow: [
+//             BoxShadow(
+//               blurRadius: 20,
+//               color: Colors.black.withOpacity(.1),
+//             )
+//           ],
+//         ),
+//         child: SafeArea(
+//             child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+//           child: GNav(
+//             rippleColor: Colors.grey[300]!,
+//             hoverColor: Colors.grey[100]!,
+//             gap: 8,
+//             activeColor: Colors.blue,
+//             iconSize: 24,
+//             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+//             duration: const Duration(milliseconds: 400),
+//             tabBackgroundColor: Colors.blue.shade100,
+//             color: Colors.blue.shade400,
+//             tabs: const [
+//               GButton(
+//                 icon: Icons.home,
+//                 text: 'Home',
+//               ),
+//               GButton(
+//                 icon: Icons.history,
+//                 text: 'History',
+//               ),
+//               GButton(
+//                 icon: Icons.settings,
+//                 text: 'Settings',
+//               ),
+//             ],
+//             selectedIndex: _selectedIndex,
+//             onTabChange: (index) {
+//               setState(() {
+//                 _selectedIndex = index;
+//               });
+//             },
+//           ),
+//         )),
+//       ),
+//     );
+//   }
+// }

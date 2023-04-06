@@ -1,5 +1,6 @@
 import 'package:chatgpt/src/pages/chat/repository/template.dart';
 import 'package:chatgpt/src/pages/home_page.dart';
+import 'package:chatgpt/src/pages/setting/representation/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -7,6 +8,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import 'chat/representation/language_controller.dart';
+import 'history/model/chat_adapter.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -20,18 +22,20 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     Get.create(() => stt.SpeechToText());
     Get.put(LanguageController());
+    Get.put(MoreSettingController());
+    Get.put(HistoryChatController());
     super.initState();
     Future.delayed(const Duration(milliseconds: 2000), () async {
       final box = await Hive.openBox('myBox');
       setState(() {
         bool isFirstTime = box.get('isFirstTime', defaultValue: true);
         if (!isFirstTime) {
-          Get.offAll(() => const HomePage());
+          Get.off(() => const HomePage());
           // Close the box
           box.close();
           return;
         } else {
-          Get.offAll(
+          Get.off(
             () => IntroductionScreen(
               isTopSafeArea: true,
               pages: [
@@ -84,6 +88,15 @@ class _SplashPageState extends State<SplashPage> {
                 box.close();
                 Get.offAll(() => const HomePage());
               },
+              dotsDecorator: DotsDecorator(
+                size: const Size.square(10.0),
+                activeSize: const Size(20.0, 10.0),
+                activeColor: Colors.blue,
+                color: Colors.grey,
+                spacing: const EdgeInsets.symmetric(horizontal: 3.0),
+                activeShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25.0)),
+              ),
               showSkipButton: true,
               skip: const Text('Skip'),
               next: const Icon(Icons.arrow_forward),
