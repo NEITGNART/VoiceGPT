@@ -1,7 +1,17 @@
 # BardGPT: Super AI Chatbot PRO
 
-[Link in Google Play](https://play.google.com/store/apps/details?id=com.bard.chatgpt.hcmus)
+More than 100 active devices\
+[Link on Google Play](https://play.google.com/store/apps/details?id=com.bard.chatgpt.hcmus)
 
-# Video
+# Video demo
 
-[Link video demo](https://youtu.be/uiKgQzycu2k)
+[Link](https://youtu.be/uiKgQzycu2k)
+
+# Additional Feature
+
+-Put banner, interstitial, reward ads (Use Admob)\
+-Multilanguage (Vietnamese, English)\
+-Reuse context (Save user input for later use)\
+-Notification (Use FCM)\
+-Introduction\
+-FAQs
