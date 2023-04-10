@@ -8,13 +8,11 @@ import 'package:chatgpt/common/app_sizes.dart';
 import 'package:chatgpt/models/custom_chat_request.dart';
 import 'package:chatgpt/network/admob_service_helper.dart';
 import 'package:chatgpt/src/pages/history/model/chat_adapter.dart';
-import 'package:chatgpt/src/pages/home_page.dart';
 import 'package:chatgpt/src/pages/setting/representation/controller.dart';
 import 'package:chatgpt/src/pages/setting/representation/my_setting.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -22,6 +20,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../common/constants.dart';
 import '../../models/chat.dart';
 import '../../network/api_services.dart';
+import '../../utils/Admob.dart';
 import '../chat/presentation/audio_waves.dart';
 import 'chat/my_reuse_text.dart';
 import 'chat/representation/my_arrow_icon.dart';
@@ -61,13 +60,13 @@ class _ChatPageState extends State<ChatPage> {
   final Map<int, bool> soundPlayingMap = {};
   TextEditingController messageController = TextEditingController();
   bool hasOpenTemplate = false;
-  int chatLimit = 10;
+  int chatLimit = 15;
   final MoreSettingController c = Get.find<MoreSettingController>();
   final HistoryChatController historyController =
       Get.find<HistoryChatController>();
 
   RewardedAd? _rewardAd;
-
+  AdManager adManager = AdManager();
   @override
   void initState() {
     super.initState();
@@ -142,11 +141,10 @@ class _ChatPageState extends State<ChatPage> {
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (RewardedAd ad) {
           _rewardAd = ad;
+          // Logger().e('Admob: Rewarded ad loaded.');
         },
         onAdFailedToLoad: (LoadAdError error) {
-          setState(() {
-            chatLimit = 20;
-          });
+          // Logger().e('Admob: Rewarded ad failed to load: $error');
         },
       ),
     );
@@ -165,11 +163,11 @@ class _ChatPageState extends State<ChatPage> {
         },
       );
       _rewardAd!.show(
-        onUserEarnedReward: (ad, reward) => setState(
-          () {
+        onUserEarnedReward: (ad, reward) {
+          setState(() {
             chatLimit += reward.amount.toInt();
-          },
-        ),
+          });
+        },
       );
       _rewardAd = null;
     }
@@ -186,9 +184,8 @@ class _ChatPageState extends State<ChatPage> {
             player.dispose();
             _assetsAudioPlayer.dispose();
             _rewardAd?.dispose();
-            Get.off(
-              () => const HomePage(),
-            );
+            Get.back();
+            // Get.back can't pop to root
           },
         ),
         title: Row(
@@ -585,7 +582,7 @@ class _ChatPageState extends State<ChatPage> {
                       },
                       InkWell(
                         onTap: (() async {
-                          Logger().e('chatLimit $chatLimit');
+                          // Logger().e('chatLimit $chatLimit');
                           if (chatLimit <= 1) {
                             Get.snackbar(
                                 'chat_limit_title'.tr, 'chat_limit_content'.tr,

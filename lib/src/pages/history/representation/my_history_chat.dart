@@ -63,18 +63,7 @@ class ChatHistoryList extends StatelessWidget {
               ),
             );
           }
-
           return BodyChat(chatList: c.chatList);
-          // ListView.builder(
-          //   itemCount: c.chats.length,
-          //   itemBuilder: (context, index) {
-          //     final Chat chat = c.chats[index];
-          //     return ListTile(
-          //       title: Text(chat.title),
-          //       subtitle: Text(chat.content),
-          //     );
-          //   },
-          // ),
         }),
       ),
     );

@@ -13,8 +13,6 @@ import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../common/my_admob.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -27,7 +25,6 @@ class _HomePageState extends State<HomePage> {
 
   InterstitialAd? _interstitialAd;
   bool _isButtonEnabled = true;
-  bool wantSmallNativeAd = false;
 
   void _createInterstitialAd() {
     InterstitialAd.load(
@@ -51,7 +48,7 @@ class _HomePageState extends State<HomePage> {
     if (_interstitialAd == null) {
       log('Warning: attempt to show interstitial before loaded.');
       // logger.e('Warning: attempt to show interstitial before loaded.');
-      Get.offAll(
+      Get.to(
         () => const ChatPage(),
       );
       return;
@@ -62,14 +59,14 @@ class _HomePageState extends State<HomePage> {
       onAdDismissedFullScreenContent: (InterstitialAd ad) {
         log('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
-        Get.off(
+        Get.to(
           () => const ChatPage(),
         );
       },
       onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         log('$ad onAdFailedToShowFullScreenContent: $error');
         ad.dispose();
-        Get.offAll(
+        Get.to(
           () => const ChatPage(),
         );
       },
@@ -164,13 +161,14 @@ class _HomePageState extends State<HomePage> {
                     );
                     await Future.delayed(const Duration(milliseconds: 2000));
                     await _showInterstitialAd();
+                    _isButtonEnabled = true;
                   },
                   SvgPicture.asset('assets/chat.svg', height: 40),
                 ),
                 buttonWidget(
                   'setting'.tr,
                   () {
-                    Get.off(
+                    Get.to(
                       () => const SettingPage(),
                     );
                   },
@@ -196,9 +194,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: MyBannerAd(
-        adUnitId: AdMobService.mainPageBannerId ?? '',
       ),
     );
   }

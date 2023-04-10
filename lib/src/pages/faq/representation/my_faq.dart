@@ -1,10 +1,8 @@
-import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/constants.dart';
-import '../../../../network/admob_service_helper.dart';
 import '../data/item.dart';
 
 class MyExpansionPanel extends StatefulWidget {
@@ -87,7 +85,6 @@ class _MyExpansionPanelState extends State<MyExpansionPanel> {
           ],
         ),
       ),
-      bottomNavigationBar: MyBannerAd(adUnitId: AdMobService.faqBannerID ?? ''),
     );
   }
 }

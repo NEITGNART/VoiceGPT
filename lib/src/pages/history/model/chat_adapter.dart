@@ -25,10 +25,14 @@ class ChatAdapter extends TypeAdapter<Chat> {
 }
 
 class HiveBoxes {
+  static final HiveBoxes _instance = HiveBoxes._internal();
+
+  factory HiveBoxes() {
+    return _instance;
+  }
+  HiveBoxes._internal();
   Future<Box<T>> openBox<T>(String name) async {
-    await Hive.initFlutter();
-    Hive.registerAdapter(ChatAdapter());
-    return Hive.openBox<T>(name);
+    return await Hive.openBox<T>(name);
   }
 }
 
@@ -39,8 +43,7 @@ class HistoryChatController extends GetxController {
   @override
   void onInit() async {
     chatBox = await HiveBoxes().openBox<Chat>('chat_history');
-    final chatList = chatBox.values.toList();
-    chatList.assignAll(chatList);
+    chatList.value = chatBox.values.toList();
     super.onInit();
   }
 

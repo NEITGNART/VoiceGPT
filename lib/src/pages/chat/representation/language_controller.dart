@@ -26,12 +26,9 @@
 // Tiếng Nag
 // ru-RU-DmitryNeural
 
-import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../../network/admob_service_helper.dart';
 
 final Map<String, String> flags = {
   'en-US-JasonNeural': 'assets/images/english.png',
@@ -222,8 +219,6 @@ class _AIVoiceState extends State<AIVoice> {
           },
         ],
       ),
-      bottomNavigationBar:
-          MyBannerAd(adUnitId: AdMobService.voiceBannerId ?? ''),
     );
   }
 }

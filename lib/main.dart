@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chatgpt/src/language.dart';
 import 'package:chatgpt/src/pages/chat/my_reuse_text.dart';
+import 'package:chatgpt/src/pages/history/model/chat_adapter.dart';
 import 'package:chatgpt/src/pages/splash_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -61,7 +61,7 @@ void main() async {
     message.subscribeToTopic('all_users');
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) {
-        Logger().e('A new onMessageOpenedApp event was published!');
+        // Logger().e('A new onMessageOpenedApp event was published!');
         if (Platform.isIOS) {
           if (message.data['iosUrl'] != null) {
             Get.snackbar(
@@ -126,7 +126,7 @@ void main() async {
 
     FirebaseMessaging.onMessageOpenedApp.listen(
       (RemoteMessage message) {
-        Logger().e('A new onMessageOpenedApp event was published!');
+        // Logger().e('A new onMessageOpenedApp event was published!');
         if (Platform.isIOS) {
           if (message.data['iosUrl'] != null) {
             launchUrlAsync(
@@ -159,6 +159,7 @@ void main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(TemplateAdapter());
+  Hive.registerAdapter(ChatAdapter());
   Get.create(() => sp);
   runApp(const MyApp());
 }

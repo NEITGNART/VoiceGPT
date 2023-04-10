@@ -115,7 +115,7 @@ import '../models/custom_chat_response.dart';
 // }
 
 final dio = Dio(BaseOptions(
-  baseUrl: 'https://chatgptserver101.herokuapp.com',
+  baseUrl: 'https://bardgpt.azurewebsites.net/',
   contentType: 'application/json',
 ));
 

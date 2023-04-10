@@ -1,10 +1,8 @@
-import 'package:chatgpt/src/common/my_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../network/admob_service_helper.dart';
 import '../model/language.dart';
 
 class MyLanguage extends StatefulWidget {
@@ -93,8 +91,6 @@ class _MyLanguageState extends State<MyLanguage> {
           ],
         ),
       ),
-      bottomNavigationBar:
-          MyBannerAd(adUnitId: AdMobService.languageBannerId ?? ''),
     );
   }
 }
