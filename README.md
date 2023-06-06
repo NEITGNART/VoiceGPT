@@ -1,6 +1,6 @@
 # BardGPT: Super AI Chatbot PRO
 
-More than 100 active devices\
+Used to 1k active devices\
 [Link on Google Play](https://play.google.com/store/apps/details?id=com.pdtien.myai)
 
 # Video demo
